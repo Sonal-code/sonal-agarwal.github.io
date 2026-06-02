@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sonal Agarwal — AI Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0f0f;
+    --ink-soft: #555;
+    --ink-muted: #999;
+    --bg: #faf9f7;
+    --bg-card: #ffffff;
+    --accent: #c84b2f;
+    --accent-light: #fdf0ec;
+    --border: #e8e4df;
+    --tag-bg: #f2efe9;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.6;
+    font-size: 16px;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    padding: 1.25rem 2.5rem;
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(250,249,247,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    z-index: 100;
+  }
+  .nav-logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a {
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 7rem 2.5rem 4rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .hero-inner { max-width: 720px; }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    display: block; width: 28px; height: 1.5px;
+    background: var(--accent);
+  }
+  .hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(3rem, 7vw, 5.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+    color: var(--ink);
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  .hero-sub {
+    font-size: 1.15rem;
+    color: var(--ink-soft);
+    font-weight: 300;
+    max-width: 520px;
+    margin-bottom: 2.5rem;
+    line-height: 1.75;
+  }
+  .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 0.8rem 1.6rem;
+    border-radius: 2px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+  }
+  .btn-primary {
+    background: var(--ink);
+    color: #fff;
+  }
+  .btn-primary:hover { background: var(--accent); }
+  .btn-outline {
+    background: transparent;
+    color: var(--ink);
+    border: 1.5px solid var(--border);
+  }
+  .btn-outline:hover { border-color: var(--ink); }
+
+  .hero-decoration {
+    position: absolute;
+    right: 0; top: 50%;
+    transform: translateY(-50%);
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    background: var(--accent-light);
+    opacity: 0.6;
+    z-index: -1;
+    display: none;
+  }
+
+  /* SECTION BASE */
+  section { padding: 5rem 2.5rem; }
+  .container { max-width: 1100px; margin: 0 auto; }
+  .section-label {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+  .section-label::before {
+    content: '';
+    display: block; width: 20px; height: 1.5px;
+    background: var(--accent);
+  }
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+  }
+  .section-sub {
+    color: var(--ink-soft);
+    font-size: 1rem;
+    font-weight: 300;
+    margin-bottom: 3rem;
+    max-width: 540px;
+  }
+
+  /* ABOUT */
+  #about { background: var(--ink); }
+  #about .section-label { color: #c84b2f; }
+  #about .section-label::before { background: #c84b2f; }
+  #about .section-title { color: #faf9f7; }
+  #about .about-body { color: #bbb; font-size: 1.05rem; font-weight: 300; line-height: 1.85; max-width: 640px; }
+  #about .about-body strong { color: #faf9f7; font-weight: 500; }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    margin-top: 3rem;
+  }
+  .about-stat {
+    border-top: 1px solid #2a2a2a;
+    padding-top: 1.25rem;
+  }
+  .about-stat .num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.5rem;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 0.4rem;
+  }
+  .about-stat .label { font-size: 0.85rem; color: #888; font-weight: 300; }
+
+  /* SKILLS */
+  #skills { background: var(--bg); }
+  .skills-pills { display: flex; flex-wrap: wrap; gap: 10px; }
+  .pill {
+    padding: 0.5rem 1.1rem;
+    border-radius: 100px;
+    font-size: 0.85rem;
+    font-weight: 400;
+    border: 1.5px solid var(--border);
+    background: var(--bg-card);
+    color: var(--ink-soft);
+    transition: all 0.2s;
+  }
+  .pill:hover { border-color: var(--accent); color: var(--accent); }
+  .pill.highlight {
+    background: var(--accent-light);
+    border-color: var(--accent);
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  /* PROJECTS */
+  #projects { background: var(--bg); border-top: 1px solid var(--border); }
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+  .project-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.75rem;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .project-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s;
+  }
+  .project-card:hover { box-shadow: 0 8px 30px rgba(0,0,0,0.07); transform: translateY(-2px); }
+  .project-card:hover::before { transform: scaleX(1); }
+
+  .card-status {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 2px;
+    margin-bottom: 1rem;
+  }
+  .status-live { background: #e8f5e9; color: #2e7d32; }
+  .status-building { background: #fff8e1; color: #f57f17; }
+  .status-planned { background: var(--tag-bg); color: var(--ink-muted); }
+
+  .card-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.3rem;
+    margin-bottom: 0.6rem;
+    line-height: 1.3;
+  }
+  .card-desc { font-size: 0.9rem; color: var(--ink-soft); font-weight: 300; line-height: 1.65; margin-bottom: 1.25rem; }
+  .card-tools { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tool-tag {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    padding: 3px 8px;
+    background: var(--tag-bg);
+    color: var(--ink-soft);
+    border-radius: 2px;
+  }
+
+  /* Coming soon card */
+  .card-coming {
+    border-style: dashed;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+    padding: 3rem 1.75rem;
+    min-height: 220px;
+    color: var(--ink-muted);
+  }
+  .card-coming .plus { font-size: 2rem; margin-bottom: 0.5rem; color: var(--border); }
+  .card-coming p { font-size: 0.85rem; line-height: 1.6; }
+
+  /* CONTACT */
+  #contact { background: var(--accent); }
+  #contact .section-label { color: rgba(255,255,255,0.7); }
+  #contact .section-label::before { background: rgba(255,255,255,0.7); }
+  #contact .section-title { color: #fff; }
+  #contact .contact-sub { color: rgba(255,255,255,0.75); font-weight: 300; font-size: 1.05rem; margin-bottom: 2rem; max-width: 480px; }
+  #contact .btn-white {
+    background: #fff;
+    color: var(--accent);
+    font-weight: 500;
+    border: none;
+  }
+  #contact .btn-white:hover { background: var(--ink); color: #fff; }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.8rem;
+    color: var(--ink-muted);
+    border-top: 1px solid var(--border);
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hero-eyebrow { animation: fadeUp 0.6s ease both; }
+  .hero h1 { animation: fadeUp 0.6s 0.1s ease both; }
+  .hero-sub { animation: fadeUp 0.6s 0.2s ease both; }
+  .hero-actions { animation: fadeUp 0.6s 0.3s ease both; }
+
+  /* RESPONSIVE */
+  @media (max-width: 640px) {
+    nav { padding: 1rem 1.25rem; }
+    section { padding: 3.5rem 1.25rem; }
+    .hero { padding: 6rem 1.25rem 3rem; }
+    .about-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="nav-logo">Sonal Agarwal</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">AI Portfolio</div>
+    <h1>Hi, I'm<br><em>Sonal Agarwal</em></h1>
+    <p class="hero-sub">Systems &amp; Insights Lead who's obsessed with AI — building real tools with Claude to automate, analyse, and do more.</p>
+    <div class="hero-actions">
+      <a href="#projects" class="btn btn-primary">See my projects →</a>
+      <a href="https://www.linkedin.com/in/sonal-agarwal2021/" target="_blank" class="btn btn-outline">LinkedIn ↗</a>
+    </div>
+  </div>
+  <div class="hero-decoration"></div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="container">
+    <div class="section-label">About me</div>
+    <h2 class="section-title">Turning data &amp; AI<br>into real outcomes</h2>
+    <p class="about-body">
+      I'm a <strong>Systems &amp; Insights Lead</strong> with a passion for finding the intersection between human problems and smart technology. When I discovered <strong>Claude and the power of AI</strong>, something clicked — I realised I could build tools that genuinely change how work gets done, no matter your technical background.
+      <br><br>
+      This portfolio documents my personal AI experiments: the things I build, break, learn from, and ship. Every project here is something I made myself, driven by curiosity and a belief that <strong>AI should be accessible to everyone</strong>.
+    </p>
+    <div class="about-grid">
+      <div class="about-stat">
+        <div class="num">1+</div>
+        <div class="label">Years exploring AI tools</div>
+      </div>
+      <div class="about-stat">
+        <div class="num">Claude</div>
+        <div class="label">Primary tool of choice</div>
+      </div>
+      <div class="about-stat">
+        <div class="num">∞</div>
+        <div class="label">Ideas in the pipeline</div>
+      </div>
+      <div class="about-stat">
+        <div class="num">0</div>
+        <div class="label">Plans to stop building</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="container">
+    <div class="section-label">What I work with</div>
+    <h2 class="section-title">Tools &amp; skills</h2>
+    <p class="section-sub">The tools I use to build, connect, and automate.</p>
+    <div class="skills-pills">
+      <span class="pill highlight">Claude AI</span>
+      <span class="pill highlight">Claude Code</span>
+      <span class="pill highlight">MCP Connectors</span>
+      <span class="pill">Systems Thinking</span>
+      <span class="pill">Data &amp; Insights</span>
+      <span class="pill">Process Automation</span>
+      <span class="pill">Google Workspace</span>
+      <span class="pill">Prompt Engineering</span>
+      <span class="pill">HTML / CSS</span>
+      <span class="pill">Dashboards</span>
+      <span class="pill">Workflow Design</span>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="container">
+    <div class="section-label">Work in progress</div>
+    <h2 class="section-title">Personal projects</h2>
+    <p class="section-sub">Real things I've built using AI. Growing as I learn.</p>
+
+    <div class="projects-grid">
+
+      <!-- Project 1: This portfolio -->
+      <div class="project-card">
+        <span class="card-status status-live">Live</span>
+        <h3 class="card-title">This portfolio site</h3>
+        <p class="card-desc">Designed and built entirely with Claude — a clean, professional site to document my AI journey and share with recruiters. No web dev background required.</p>
+        <div class="card-tools">
+          <span class="tool-tag">Claude.ai</span>
+          <span class="tool-tag">HTML/CSS</span>
+          <span class="tool-tag">GitHub Pages</span>
+        </div>
+      </div>
+
+      <!-- Coming soon cards -->
+      <div class="project-card card-coming">
+        <div class="plus">+</div>
+        <p><strong>Next project coming soon</strong><br>Currently exploring ideas — check back shortly.</p>
+      </div>
+
+      <div class="project-card card-coming">
+        <div class="plus">+</div>
+        <p><strong>More in the pipeline</strong><br>Building and learning every week.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="container">
+    <div class="section-label">Get in touch</div>
+    <h2 class="section-title">Let's connect</h2>
+    <p class="contact-sub">Interested in AI, automation, or just want to chat about what's possible with Claude? I'd love to connect.</p>
+    <a href="https://www.linkedin.com/in/sonal-agarwal2021/" target="_blank" class="btn btn-white">Connect on LinkedIn ↗</a>
+  </div>
+</section>
+
+<footer>
+  <p>Built with Claude · Sonal Agarwal · 2025</p>
+</footer>
+
+</body>
+</html>
