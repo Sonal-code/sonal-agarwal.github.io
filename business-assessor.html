@@ -55,9 +55,9 @@ textarea:focus,input:focus{ outline:none; border-color:var(--blue); background:#
 .rb input{ display:none; }
 
 /* upload */
-.upload-zone{ border:2px dashed #cbd5e1; border-radius:10px; padding:16px; text-align:center; cursor:pointer; transition:all .2s; background:#fafbfc; margin-bottom:8px; position:relative; }
+.upload-zone{ border:2px dashed #cbd5e1; border-radius:10px; padding:16px; text-align:center; cursor:pointer; transition:all .2s; background:#fafbfc; margin-bottom:8px; }
 .upload-zone:hover,.upload-zone.drag-over{ border-color:var(--blue); background:#eff6ff; }
-.upload-zone input[type=file]{ position:absolute; inset:0; opacity:0; cursor:pointer; width:100%; height:100%; }
+.upload-zone input[type=file]{ display:none; }
 .uz-icon{ font-size:20px; margin-bottom:5px; }
 .uz-text{ font-size:13px; color:#64748b; }
 .uz-text strong{ color:var(--blue); }
@@ -195,8 +195,8 @@ textarea:focus,input:focus{ outline:none; border-color:var(--blue); background:#
       <div class="fg">
         <label class="lbl">Business listing / agent description</label>
         <div class="chips" id="chips-listing"></div>
-        <div class="upload-zone" id="zone-listing" ondragover="dOver(event,'zone-listing')" ondragleave="dLeave('zone-listing')" ondrop="dDrop(event,'listing')">
-          <input type="file" accept=".pdf,.docx,.doc,.txt" multiple onchange="handleFiles(this.files,'listing','listing')">
+        <input type="file" id="file-listing" accept=".pdf,.docx,.doc,.txt" multiple onchange="handleFiles(this.files,'listing','listing')">
+        <div class="upload-zone" id="zone-listing" onclick="document.getElementById('file-listing').click()" ondragover="dOver(event,'zone-listing')" ondragleave="dLeave('zone-listing')" ondrop="dDrop(event,'listing')">
           <div class="uz-icon">📄</div>
           <div class="uz-text"><strong>Click to upload</strong> or drag & drop</div>
           <div class="uz-sub">PDF, Word (.docx), or Text (.txt)</div>
@@ -208,10 +208,10 @@ textarea:focus,input:focus{ outline:none; border-color:var(--blue); background:#
       <div class="fg">
         <label class="lbl">Job advertisements <span class="lbl-hint">(job ads reveal a lot about staffing & the business)</span></label>
         <div class="chips" id="chips-jobads"></div>
-        <div class="upload-zone" id="zone-jobads" ondragover="dOver(event,'zone-jobads')" ondragleave="dLeave('zone-jobads')" ondrop="dDrop(event,'jobads')">
-          <input type="file" accept=".pdf,.docx,.doc,.txt" multiple onchange="handleFiles(this.files,'jobads','jobAds')">
+        <input type="file" id="file-jobads" accept=".pdf,.docx,.doc,.txt" multiple onchange="handleFiles(this.files,'jobads','jobAds')">
+        <div class="upload-zone" id="zone-jobads" onclick="document.getElementById('file-jobads').click()" ondragover="dOver(event,'zone-jobads')" ondragleave="dLeave('zone-jobads')" ondrop="dDrop(event,'jobads')">
           <div class="uz-icon">💼</div>
-          <div class="uz-text"><strong>Upload job ads</strong></div>
+          <div class="uz-text"><strong>Click to upload</strong> job ads</div>
           <div class="uz-sub">PDF, Word (.docx), or Text (.txt)</div>
         </div>
         <div class="or-div">or paste text</div>
@@ -221,10 +221,10 @@ textarea:focus,input:focus{ outline:none; border-color:var(--blue); background:#
       <div class="fg">
         <label class="lbl">Other documents <span class="lbl-hint">(emails, brochures, inspection notes)</span></label>
         <div class="chips" id="chips-other"></div>
-        <div class="upload-zone" id="zone-other" ondragover="dOver(event,'zone-other')" ondragleave="dLeave('zone-other')" ondrop="dDrop(event,'other')">
-          <input type="file" accept=".pdf,.docx,.doc,.txt" multiple onchange="handleFiles(this.files,'other','otherDocs')">
+        <input type="file" id="file-other" accept=".pdf,.docx,.doc,.txt" multiple onchange="handleFiles(this.files,'other','otherDocs')">
+        <div class="upload-zone" id="zone-other" onclick="document.getElementById('file-other').click()" ondragover="dOver(event,'zone-other')" ondragleave="dLeave('zone-other')" ondrop="dDrop(event,'other')">
           <div class="uz-icon">📎</div>
-          <div class="uz-text"><strong>Upload any other files</strong></div>
+          <div class="uz-text"><strong>Click to upload</strong> any other files</div>
           <div class="uz-sub">PDF, Word (.docx), or Text (.txt)</div>
         </div>
         <div class="or-div">or paste text</div>
@@ -263,8 +263,8 @@ textarea:focus,input:focus{ outline:none; border-color:var(--blue); background:#
       <div class="fg">
         <label class="lbl">Financial documents <span class="lbl-hint">(P&L, tax returns, balance sheet)</span></label>
         <div class="chips" id="chips-fin"></div>
-        <div class="upload-zone" id="zone-fin" ondragover="dOver(event,'zone-fin')" ondragleave="dLeave('zone-fin')" ondrop="dDrop(event,'fin')">
-          <input type="file" accept=".pdf,.docx,.doc,.txt" multiple onchange="handleFiles(this.files,'fin','financialDetails')">
+        <input type="file" id="file-fin" accept=".pdf,.docx,.doc,.txt" multiple onchange="handleFiles(this.files,'fin','financialDetails')">
+        <div class="upload-zone" id="zone-fin" onclick="document.getElementById('file-fin').click()" ondragover="dOver(event,'zone-fin')" ondragleave="dLeave('zone-fin')" ondrop="dDrop(event,'fin')">
           <div class="uz-icon">📊</div>
           <div class="uz-text"><strong>Upload financial statements</strong></div>
           <div class="uz-sub">P&L, tax returns, balance sheets — PDF, Word, or Text</div>
@@ -582,9 +582,9 @@ function rv(name){
 // ── File upload ────────────────────────────────────
 function dOver(e,id){ e.preventDefault(); document.getElementById(id).classList.add('drag-over'); }
 function dLeave(id){ document.getElementById(id).classList.remove('drag-over'); }
-function dDrop(e,sec){ e.preventDefault(); dLeave('zone-'+sec); handleFiles(e.dataTransfer.files,sec,taMap[sec]); }
-
 const taMap={ listing:'listing', jobads:'jobAds', other:'otherDocs', fin:'financialDetails' };
+
+function dDrop(e,sec){ e.preventDefault(); dLeave('zone-'+sec); handleFiles(e.dataTransfer.files,sec,taMap[sec]); }
 
 async function handleFiles(files,sec,taId){
   for(const f of files){
