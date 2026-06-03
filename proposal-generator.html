@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Proposal Generator — Powered by Claude</title>
+<style>
+:root {
+  --bg: #0d0f18; --card: #141720; --card2: #1c2030; --border: #252a3d;
+  --accent: #7c6bff; --green: #00c896; --red: #ff5a5a; --yellow: #ffc542;
+  --blue: #4db8ff; --text: #e6e8f0; --muted: #6b7291;
+  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; }
+
+.topbar {
+  background: var(--card); border-bottom: 1px solid var(--border);
+  padding: 0 28px; height: 54px; display: flex; align-items: center; justify-content: space-between;
+}
+.topbar-logo { font-size: 15px; font-weight: 700; }
+.topbar-logo span { color: var(--accent); }
+.topbar-right { font-size: 11px; color: var(--muted); }
+
+.wrap { max-width: 900px; margin: 0 auto; padding: 36px 20px 80px; }
+
+.hero { text-align: center; margin-bottom: 36px; }
+.hero-tag { font-size: 11px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+.hero h1 { font-size: 30px; font-weight: 800; margin-bottom: 10px; }
+.hero p { font-size: 14px; color: var(--muted); max-width: 520px; margin: 0 auto; line-height: 1.7; }
+
+/* FORM */
+.form-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 28px 32px; margin-bottom: 20px; }
+.form-card h2 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+.form-card .form-sub { font-size: 12px; color: var(--muted); margin-bottom: 22px; }
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group.full { grid-column: 1 / -1; }
+label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; }
+input, textarea, select {
+  background: var(--card2); border: 1px solid var(--border); color: var(--text);
+  padding: 10px 14px; border-radius: 8px; font-size: 13px; font-family: var(--font);
+  outline: none; transition: border-color 0.15s; width: 100%;
+}
+input:focus, textarea:focus, select:focus { border-color: var(--accent); }
+textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
+select option { background: var(--card2); }
+
+.api-row { display: flex; gap: 10px; align-items: flex-end; margin-bottom: 20px; }
+.api-row .form-group { flex: 1; margin-bottom: 0; }
+.api-note { font-size: 11px; color: var(--muted); margin-top: 6px; }
+.api-note a { color: var(--accent); text-decoration: none; }
+
+.btn-generate {
+  width: 100%; padding: 14px; background: var(--accent); color: white;
+  border: none; border-radius: 10px; font-size: 14px; font-weight: 700;
+  cursor: pointer; transition: opacity 0.15s; margin-top: 20px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn-generate:hover { opacity: 0.88; }
+.btn-generate:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* LOADING */
+.loading { display: none; text-align: center; padding: 40px; }
+.loading.show { display: block; }
+.spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading p { font-size: 13px; color: var(--muted); }
+.loading-steps { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+.loading-step { font-size: 12px; color: var(--muted); opacity: 0; transition: opacity 0.3s; }
+.loading-step.show { opacity: 1; color: var(--green); }
+
+/* OUTPUT */
+.output { display: none; }
+.output.show { display: block; }
+
+.output-header {
+  background: linear-gradient(135deg, #1a1540, var(--card));
+  border: 1px solid rgba(124,107,255,0.3); border-radius: 14px;
+  padding: 28px 32px; margin-bottom: 20px;
+}
+.output-header .oh-tag { font-size: 11px; color: var(--accent); font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+.output-header h2 { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+.output-header .oh-sub { font-size: 13px; color: var(--muted); }
+.output-meta { display: flex; gap: 20px; margin-top: 16px; flex-wrap: wrap; }
+.output-meta .om { font-size: 12px; color: var(--muted); }
+.output-meta .om strong { color: var(--text); }
+
+.proposal-body {
+  background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+  padding: 32px; margin-bottom: 20px; line-height: 1.8;
+}
+.proposal-body h2 { font-size: 17px; font-weight: 700; color: var(--accent); margin: 28px 0 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+.proposal-body h2:first-child { margin-top: 0; }
+.proposal-body h3 { font-size: 14px; font-weight: 600; color: var(--yellow); margin: 18px 0 8px; }
+.proposal-body p { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+.proposal-body p strong { color: var(--text); }
+.proposal-body ul { margin: 8px 0 14px 18px; }
+.proposal-body ul li { font-size: 13px; color: var(--muted); margin-bottom: 6px; line-height: 1.6; }
+.proposal-body ul li strong { color: var(--text); }
+.proposal-body .highlight-box {
+  background: rgba(124,107,255,0.08); border: 1px solid rgba(124,107,255,0.2);
+  border-radius: 8px; padding: 14px 18px; margin: 16px 0;
+}
+.proposal-body .highlight-box p { margin-bottom: 0; color: var(--text); }
+
+.action-btns { display: flex; gap: 10px; margin-bottom: 20px; }
+.btn-secondary {
+  padding: 10px 18px; border-radius: 8px; font-size: 13px; font-weight: 600;
+  cursor: pointer; border: 1px solid var(--border); background: var(--card);
+  color: var(--text); transition: all 0.15s;
+}
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+.error-box { background: rgba(255,90,90,0.08); border: 1px solid rgba(255,90,90,0.25); border-radius: 10px; padding: 14px 18px; color: var(--red); font-size: 13px; margin-bottom: 20px; display: none; }
+.error-box.show { display: block; }
+
+.back-link { font-size: 12px; color: var(--muted); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 24px; transition: color 0.15s; }
+.back-link:hover { color: var(--accent); }
+
+@media (max-width: 640px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .form-card { padding: 20px; }
+  .proposal-body { padding: 20px; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo">✨ <span>Business Proposal Generator</span></div>
+  <div class="topbar-right">Powered by Claude AI</div>
+</div>
+
+<div class="wrap">
+  <a href="index.html" class="back-link">← Back to portfolio</a>
+
+  <div class="hero">
+    <div class="hero-tag">Claude AI Tool</div>
+    <h1>Business Proposal Generator</h1>
+    <p>Describe your business and goals — Claude writes a professional, actionable expansion proposal in seconds. Pre-filled with a real example: <strong style="color:var(--text)">Abstract by Sonal</strong>.</p>
+  </div>
+
+  <!-- FORM -->
+  <div class="form-card">
+    <h2>Your Business Details</h2>
+    <p class="form-sub">Fill in the details below — or use the pre-filled example and click Generate.</p>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Business Name</label>
+        <input type="text" id="bizName" value="Abstract by Sonal" placeholder="e.g. My Creative Studio">
+      </div>
+      <div class="form-group">
+        <label>Industry / Type</label>
+        <input type="text" id="bizType" value="Fine Art — Abstract Painting" placeholder="e.g. Handmade jewellery">
+      </div>
+      <div class="form-group full">
+        <label>What does your business do today?</label>
+        <textarea id="bizCurrent" placeholder="Describe your current products, how you sell, who buys from you...">I create original abstract acrylic paintings and sell them through Bluethumb, Australia's leading online art marketplace. I paint bold, colourful abstract pieces that resonate with people who want to bring life and energy into their homes. I currently sell only original paintings — one-of-a-kind pieces. Sales are inconsistent and I want to grow revenue without painting constantly.</textarea>
+      </div>
+      <div class="form-group full">
+        <label>What is your expansion goal?</label>
+        <textarea id="bizGoal" placeholder="What do you want to achieve? More revenue, new products, new markets...">I want to make the business more profitable and sustainable. Should I stay focused on original paintings or expand into products that use my artwork — like art prints, homewares, cushions, phone cases, stationery, or digital downloads? I want a clear strategy that uses my existing paintings as the foundation but builds multiple income streams. I'm open to online and wholesale options.</textarea>
+      </div>
+      <div class="form-group">
+        <label>Target Customer</label>
+        <input type="text" id="bizCustomer" value="Australian homeowners aged 28–50 who love bold, modern interiors" placeholder="Who buys from you?">
+      </div>
+      <div class="form-group">
+        <label>Current Monthly Revenue (approx)</label>
+        <select id="bizRevenue">
+          <option value="pre-revenue / just starting out">Pre-revenue / just starting</option>
+          <option value="under $500/month">Under $500/month</option>
+          <option value="$500–$2,000/month" selected>$500–$2,000/month</option>
+          <option value="$2,000–$5,000/month">$2,000–$5,000/month</option>
+          <option value="$5,000+/month">$5,000+/month</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Budget to Invest in Growth</label>
+        <select id="bizBudget">
+          <option value="minimal — under $500">Minimal — under $500</option>
+          <option value="small — $500–$2,000" selected>Small — $500–$2,000</option>
+          <option value="moderate — $2,000–$10,000">Moderate — $2,000–$10,000</option>
+          <option value="significant — $10,000+">Significant — $10,000+</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Biggest Challenge</label>
+        <input type="text" id="bizChallenge" value="Inconsistent sales, time-for-money trap, hard to scale original art" placeholder="What's holding you back?">
+      </div>
+    </div>
+
+    <div style="height:1px;background:var(--border);margin:24px 0;"></div>
+
+    <h2 style="margin-bottom:4px;">Claude API Key</h2>
+    <p class="form-sub">Your key is used only in your browser and never stored. <a href="https://console.anthropic.com" target="_blank" class="api-note" style="color:var(--accent)">Get one free at console.anthropic.com ↗</a></p>
+    <div class="form-group">
+      <input type="password" id="apiKey" placeholder="sk-ant-api03-...">
+    </div>
+
+    <div class="error-box" id="errorBox"></div>
+
+    <button class="btn-generate" id="generateBtn" onclick="generate()">
+      ✨ Generate Business Proposal
+    </button>
+  </div>
+
+  <!-- LOADING -->
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <p>Claude is writing your proposal...</p>
+    <div class="loading-steps">
+      <div class="loading-step" id="step1">✓ Analysing your business model</div>
+      <div class="loading-step" id="step2">✓ Identifying expansion opportunities</div>
+      <div class="loading-step" id="step3">✓ Building revenue stream strategy</div>
+      <div class="loading-step" id="step4">✓ Writing your action plan</div>
+    </div>
+  </div>
+
+  <!-- OUTPUT -->
+  <div class="output" id="output">
+    <div class="output-header">
+      <div class="oh-tag">Business Expansion Proposal — Generated by Claude AI</div>
+      <h2 id="out-title"></h2>
+      <div class="oh-sub" id="out-sub"></div>
+      <div class="output-meta">
+        <div class="om">Prepared for: <strong id="out-for"></strong></div>
+        <div class="om">Goal: <strong id="out-goal-short"></strong></div>
+        <div class="om">Generated: <strong id="out-date"></strong></div>
+      </div>
+    </div>
+
+    <div class="action-btns">
+      <button class="btn-secondary" onclick="window.print()">🖨️ Print / Save as PDF</button>
+      <button class="btn-secondary" onclick="resetForm()">← Generate Another</button>
+    </div>
+
+    <div class="proposal-body" id="proposalBody"></div>
+  </div>
+
+</div>
+
+<script>
+async function generate() {
+  const apiKey = document.getElementById('apiKey').value.trim();
+  const bizName = document.getElementById('bizName').value.trim();
+  const bizType = document.getElementById('bizType').value.trim();
+  const bizCurrent = document.getElementById('bizCurrent').value.trim();
+  const bizGoal = document.getElementById('bizGoal').value.trim();
+  const bizCustomer = document.getElementById('bizCustomer').value.trim();
+  const bizRevenue = document.getElementById('bizRevenue').value;
+  const bizBudget = document.getElementById('bizBudget').value;
+  const bizChallenge = document.getElementById('bizChallenge').value.trim();
+
+  const errorBox = document.getElementById('errorBox');
+  errorBox.classList.remove('show');
+
+  if (!apiKey) { showError('Please enter your Claude API key.'); return; }
+  if (!bizName || !bizCurrent || !bizGoal) { showError('Please fill in at least the business name, current situation, and goal.'); return; }
+
+  // Show loading
+  document.getElementById('generateBtn').disabled = true;
+  document.getElementById('loading').classList.add('show');
+  document.getElementById('output').classList.remove('show');
+
+  // Animate loading steps
+  const steps = ['step1','step2','step3','step4'];
+  steps.forEach((s, i) => {
+    setTimeout(() => document.getElementById(s).classList.add('show'), i * 1200);
+  });
+
+  const prompt = `You are a senior business strategist and consultant. Write a detailed, actionable business expansion proposal for the following business. Use clear headings, be specific with numbers and tactics, and make it genuinely useful — not generic advice.
+
+BUSINESS DETAILS:
+- Business Name: ${bizName}
+- Type: ${bizType}
+- Current Model: ${bizCurrent}
+- Expansion Goal: ${bizGoal}
+- Target Customer: ${bizCustomer}
+- Current Monthly Revenue: ${bizRevenue}
+- Budget to Invest: ${bizBudget}
+- Biggest Challenge: ${bizChallenge}
+
+Write the proposal with these sections using markdown headers (##):
+
+## Executive Summary
+2-3 sentences capturing the opportunity and recommendation.
+
+## Current State Assessment
+Honest analysis of where the business is today — strengths, weaknesses, and the core challenge to solve.
+
+## The Opportunity
+What's the real market opportunity here? Be specific about what's possible and why now.
+
+## Recommended Revenue Streams
+List 4-6 specific revenue streams in priority order. For each one explain: what it is, why it fits this business, estimated effort to set up, estimated revenue potential, and which platforms or channels to use.
+
+## 90-Day Action Plan
+Concrete month-by-month steps. Month 1, Month 2, Month 3. What to do first, second, third.
+
+## Investment & Expected Return
+What to spend the available budget on, and realistic revenue expectations at 3 months, 6 months, and 12 months.
+
+## Key Risks & How to Manage Them
+3-4 real risks with mitigation strategies.
+
+## Final Recommendation
+One clear, direct recommendation. What should they do first and why.
+
+Be direct, specific, and genuinely helpful. Use Australian context where relevant. Avoid generic business clichés.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({
+        model: 'claude-opus-4-6',
+        max_tokens: 2000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error?.message || 'API request failed');
+    }
+
+    const data = await res.json();
+    const text = data.content?.[0]?.text || '';
+
+    // Render output
+    document.getElementById('out-title').textContent = bizName + ' — Business Expansion Proposal';
+    document.getElementById('out-sub').textContent = bizType;
+    document.getElementById('out-for').textContent = bizName;
+    document.getElementById('out-goal-short').textContent = 'Profitable expansion';
+    document.getElementById('out-date').textContent = new Date().toLocaleDateString('en-AU', { day:'numeric', month:'long', year:'numeric' });
+
+    document.getElementById('proposalBody').innerHTML = renderMarkdown(text);
+
+    document.getElementById('loading').classList.remove('show');
+    document.getElementById('output').classList.add('show');
+    document.getElementById('output').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  } catch(e) {
+    document.getElementById('loading').classList.remove('show');
+    document.getElementById('generateBtn').disabled = false;
+    steps.forEach(s => document.getElementById(s).classList.remove('show'));
+    showError('Error: ' + e.message + '. Check your API key and try again.');
+  }
+}
+
+function renderMarkdown(text) {
+  return text
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/^- (.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>\n?)+/g, m => '<ul>' + m + '</ul>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/^(?!<[hul])/gm, '')
+    .split('\n').map(line => {
+      if (line.startsWith('<h') || line.startsWith('<ul') || line.startsWith('<li')) return line;
+      if (line.trim() === '') return '';
+      return line.startsWith('<') ? line : '<p>' + line + '</p>';
+    }).join('\n');
+}
+
+function showError(msg) {
+  const el = document.getElementById('errorBox');
+  el.textContent = msg;
+  el.classList.add('show');
+  document.getElementById('generateBtn').disabled = false;
+}
+
+function resetForm() {
+  document.getElementById('output').classList.remove('show');
+  document.getElementById('generateBtn').disabled = false;
+  ['step1','step2','step3','step4'].forEach(s => document.getElementById(s).classList.remove('show'));
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
