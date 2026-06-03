@@ -3,794 +3,925 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Business Acquisition Assessor</title>
+<title>Business Acquisition Assessor — Sonal Agarwal</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:#0d0f18; --card:#141720; --card2:#1c2030; --border:#252a3d;
-  --accent:#4c9eff; --green:#00c896; --red:#ff5a5a; --yellow:#ffc542;
-  --orange:#ff8c42; --purple:#7c6bff; --teal:#00d4c8;
-  --text:#e6e8f0; --muted:#6b7291; --muted2:#9097b8;
-  --font:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-}
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;}
-.topbar{background:var(--card);border-bottom:1px solid var(--border);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
-.topbar-logo{font-size:15px;font-weight:800;color:var(--accent);}
-.back-link{font-size:11px;color:var(--muted);text-decoration:none;}
-.back-link:hover{color:var(--accent);}
-.tabs{display:flex;border-bottom:1px solid var(--border);background:var(--card);padding:0 20px;}
-.tab-btn{padding:13px 20px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;}
-.tab-btn:hover{color:var(--text);}
-.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
-.page{display:none;max-width:1100px;margin:0 auto;padding:28px 20px 80px;}
-.page.active{display:block;}
-.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px 26px;margin-bottom:16px;}
-.card h3{font-size:14px;font-weight:700;margin-bottom:4px;}
-.card-sub{font-size:11px;color:var(--muted);margin-bottom:18px;}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-.full{grid-column:1/-1;}
-.fgroup{display:flex;flex-direction:column;gap:5px;}
-label{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;}
-input,select,textarea{background:var(--card2);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:7px;font-size:13px;font-family:var(--font);outline:none;width:100%;}
-input:focus,select:focus,textarea:focus{border-color:var(--accent);}
-textarea{resize:vertical;min-height:100px;line-height:1.6;}
-select option{background:var(--card2);}
-.btn{padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:var(--font);transition:all .15s;}
-.btn-primary{background:var(--accent);color:#fff;}
-.btn-primary:hover{opacity:.85;}
-.btn-ghost{background:none;border:1px solid var(--border);color:var(--muted2);}
-.btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
-.btn-big{width:100%;padding:14px;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px;}
-.api-bar{background:rgba(76,158,255,.07);border:1px solid rgba(76,158,255,.2);border-radius:8px;padding:12px 16px;display:flex;gap:12px;align-items:center;margin-bottom:16px;flex-wrap:wrap;}
-.api-bar input{flex:1;min-width:200px;}
-.api-bar a{color:var(--accent);text-decoration:none;font-size:11px;}
-.error{background:rgba(255,90,90,.1);border:1px solid rgba(255,90,90,.3);color:var(--red);border-radius:7px;padding:10px 14px;font-size:12px;margin-bottom:14px;display:none;}
-.error.show{display:block;}
+  :root {
+    color-scheme: light;
+    --ink: #0f0f0f;
+    --ink-soft: #555;
+    --bg: #f5f7fa;
+    --accent: #c84b2f;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* DASHBOARD */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px;}
-.stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 18px;}
-.stat .n{font-size:28px;font-weight:800;margin-bottom:2px;}
-.stat .l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;}
-.biz-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px;}
-.biz-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;cursor:pointer;transition:all .2s;}
-.biz-card:hover{border-color:var(--accent);transform:translateY(-2px);}
-.biz-card .type{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px;}
-.biz-card .name{font-size:15px;font-weight:700;margin-bottom:4px;}
-.biz-card .price{font-size:12px;color:var(--muted2);margin-bottom:12px;}
-.biz-card .bottom{display:flex;align-items:center;justify-content:space-between;margin-top:10px;}
-.score-circle{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;border:2.5px solid;}
-.sc-green{border-color:var(--green);color:var(--green);}
-.sc-yellow{border-color:var(--yellow);color:var(--yellow);}
-.sc-red{border-color:var(--red);color:var(--red);}
-.badge{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:3px;}
-.bg-green{background:rgba(0,200,150,.15);color:var(--green);}
-.bg-yellow{background:rgba(255,197,66,.15);color:var(--yellow);}
-.bg-orange{background:rgba(255,140,66,.15);color:var(--orange);}
-.bg-red{background:rgba(255,90,90,.15);color:var(--red);}
-.bg-muted{background:rgba(107,114,145,.15);color:var(--muted2);}
-.del-btn{background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;padding:3px 6px;border-radius:4px;}
-.del-btn:hover{color:var(--red);background:rgba(255,90,90,.1);}
-.empty{text-align:center;padding:60px 20px;}
-.empty .icon{font-size:44px;margin-bottom:14px;}
-.empty h3{font-size:16px;color:var(--muted2);margin-bottom:8px;}
-.empty p{font-size:13px;color:var(--muted);max-width:380px;margin:0 auto 20px;line-height:1.7;}
+  body {
+    font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+  }
 
-/* LOADING */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;display:none;align-items:center;justify-content:center;}
-.overlay.show{display:flex;}
-.loading-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:40px 48px;text-align:center;max-width:380px;}
-.spinner{width:38px;height:38px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 18px;}
-@keyframes spin{to{transform:rotate(360deg);}}
-.lstep{font-size:12px;color:var(--muted);margin-top:7px;opacity:0;transition:opacity .3s;}
-.lstep.show{opacity:1;color:var(--green);}
+  /* Top nav */
+  .topbar {
+    background: rgba(250,249,247,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid #e8e4df;
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar a {
+    font-size: 13px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .topbar a:hover { color: var(--accent); }
+  .topbar-sep { color: #ccc; font-size: 13px; }
+  .topbar-title { font-size: 13px; font-weight: 500; color: var(--ink); }
 
-/* RESULTS PANEL */
-.results-panel{display:none;}
-.results-panel.show{display:block;}
-.result-header{background:linear-gradient(135deg,#1a1040,var(--card));border:1px solid rgba(76,158,255,.2);border-radius:12px;padding:24px 28px;margin-bottom:16px;}
-.score-big{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;border:3px solid;flex-shrink:0;}
-.sub-scores{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px;}
-.sub-score{background:var(--card2);border-radius:8px;padding:12px;text-align:center;}
-.sub-score .v{font-size:20px;font-weight:800;margin-bottom:2px;}
-.sub-score .l{font-size:10px;color:var(--muted);}
-.flag{display:flex;gap:10px;padding:10px 14px;border-radius:7px;margin-bottom:8px;font-size:12px;line-height:1.6;align-items:flex-start;}
-.flag-red{background:rgba(255,90,90,.08);border:1px solid rgba(255,90,90,.2);}
-.flag-yellow{background:rgba(255,197,66,.08);border:1px solid rgba(255,197,66,.2);}
-.flag-green{background:rgba(0,200,150,.08);border:1px solid rgba(0,200,150,.2);}
-.flag-icon{flex-shrink:0;}
-.section-title{font-size:13px;font-weight:700;color:var(--accent);padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:12px;}
-.q-item{display:flex;gap:10px;background:var(--card2);border-radius:7px;padding:10px 12px;margin-bottom:7px;font-size:12px;line-height:1.6;align-items:flex-start;}
-.q-num{color:var(--accent);font-weight:700;flex-shrink:0;min-width:20px;}
-.q-cat{font-size:9px;font-weight:700;text-transform:uppercase;padding:2px 6px;border-radius:3px;flex-shrink:0;white-space:nowrap;}
-.qc-fin{background:rgba(0,200,150,.15);color:var(--green);}
-.qc-ops{background:rgba(76,158,255,.15);color:var(--accent);}
-.qc-leg{background:rgba(255,90,90,.15);color:var(--red);}
-.qc-mkt{background:rgba(255,197,66,.15);color:var(--yellow);}
-.qc-sta{background:rgba(124,107,255,.15);color:var(--purple);}
-.val-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;}
-.val-box{background:var(--card2);border-radius:8px;padding:12px;text-align:center;}
-.val-box .v{font-size:16px;font-weight:700;margin-bottom:2px;}
-.val-box .l{font-size:10px;color:var(--muted);}
+  .header {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: white;
+    padding: 28px 32px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .header-icon { font-size: 30px; }
+  .header h1 { font-size: 21px; font-weight: 700; font-family: 'DM Serif Display', serif; }
+  .header p { font-size: 13px; opacity: 0.65; margin-top: 3px; }
 
-/* COMPARE */
-.cmp-table{width:100%;border-collapse:collapse;}
-.cmp-table th,.cmp-table td{padding:10px 14px;text-align:center;border-bottom:1px solid var(--border);font-size:12px;}
-.cmp-table th{background:var(--card2);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;}
-.cmp-table td:first-child{text-align:left;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600;}
+  .container { max-width: 820px; margin: 0 auto; padding: 28px 20px 60px; }
 
-@media(max-width:640px){
-  .grid2{grid-template-columns:1fr;}
-  .stats-row{grid-template-columns:1fr 1fr;}
-  .sub-scores{grid-template-columns:1fr 1fr;}
-  .val-grid{grid-template-columns:1fr;}
-}
+  /* API key panel */
+  .api-panel {
+    background: white;
+    border-radius: 12px;
+    padding: 28px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+    border-left: 4px solid #6366f1;
+  }
+  .api-panel h2 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .api-panel p { font-size: 13px; color: #555; line-height: 1.6; margin-bottom: 14px; }
+  .api-panel .note { font-size: 12px; color: #94a3b8; margin-top: 8px; line-height: 1.5; }
+  .api-input-row { display: flex; gap: 8px; }
+  .api-input-row input {
+    flex: 1;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-family: inherit;
+    background: #fafbfc;
+  }
+  .api-input-row input:focus { outline: none; border-color: #6366f1; background: white; }
+  .btn-set-key {
+    background: #6366f1;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .btn-set-key:hover { background: #4f46e5; }
+  .key-set-badge {
+    display: none;
+    align-items: center;
+    gap: 6px;
+    background: #f0fdf4;
+    border: 1px solid #6ee7b7;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    color: #065f46;
+    font-weight: 500;
+    margin-top: 10px;
+  }
+  .key-set-badge.visible { display: flex; }
+
+  /* Progress bar */
+  .progress-bar {
+    display: flex;
+    margin-bottom: 24px;
+    background: #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .progress-step {
+    flex: 1;
+    padding: 9px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748b;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-right: 1px solid #cbd5e1;
+  }
+  .progress-step:last-child { border-right: none; }
+  .progress-step.active { background: #3b82f6; color: white; }
+  .progress-step.done { background: #10b981; color: white; }
+  .progress-step .step-num { display: block; font-size: 15px; margin-bottom: 1px; }
+
+  /* Cards */
+  .card {
+    background: white;
+    border-radius: 12px;
+    padding: 26px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+  }
+  .card h2 { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+  .card .subtitle { font-size: 13px; color: #64748b; margin-bottom: 18px; line-height: 1.5; }
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
+    margin-top: 16px;
+  }
+  label:first-of-type { margin-top: 0; }
+  .label-hint { font-weight: 400; color: #94a3b8; font-size: 12px; }
+
+  textarea {
+    width: 100%;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 13px;
+    font-family: inherit;
+    color: #1a1a2e;
+    background: #fafbfc;
+    resize: vertical;
+    transition: border-color 0.2s;
+    min-height: 100px;
+  }
+  textarea:focus { outline: none; border-color: #3b82f6; background: white; }
+  textarea.tall { min-height: 160px; }
+
+  input[type="text"] {
+    width: 100%;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-family: inherit;
+    color: #1a1a2e;
+    background: #fafbfc;
+    transition: border-color 0.2s;
+  }
+  input[type="text"]:focus { outline: none; border-color: #3b82f6; background: white; }
+
+  .radio-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .radio-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 13px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #374151;
+    transition: all 0.15s;
+    background: #fafbfc;
+    user-select: none;
+  }
+  .radio-btn:hover { border-color: #3b82f6; }
+  .radio-btn.selected { border-color: #3b82f6; background: #eff6ff; color: #1d4ed8; font-weight: 600; }
+  .radio-btn input { display: none; }
+
+  .tip-box {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 12px;
+    color: #1d4ed8;
+    margin-top: 18px;
+    line-height: 1.6;
+  }
+  .tip-box strong { display: block; margin-bottom: 3px; }
+
+  .step-intro {
+    background: linear-gradient(135deg, #f0f4ff, #e8f0ff);
+    border: 1px solid #c7d7ff;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    color: #3730a3;
+    line-height: 1.6;
+  }
+
+  .field-group { margin-top: 16px; }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 10px; margin-top: 22px; justify-content: flex-end; }
+  .btn {
+    padding: 10px 22px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.15s;
+    font-family: inherit;
+  }
+  .btn-primary { background: #3b82f6; color: white; }
+  .btn-primary:hover { background: #2563eb; }
+  .btn-secondary { background: #f1f5f9; color: #374151; }
+  .btn-secondary:hover { background: #e2e8f0; }
+  .btn-analyze {
+    background: linear-gradient(135deg, #6366f1, #3b82f6);
+    color: white;
+    padding: 12px 28px;
+    font-size: 15px;
+  }
+  .btn-analyze:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-restart { background: #f1f5f9; color: #374151; }
+
+  /* Step panels */
+  .step-panel { display: none; }
+  .step-panel.active { display: block; }
+
+  /* Loading */
+  .analyzing-overlay { display: none; text-align: center; padding: 56px 20px; }
+  .analyzing-overlay.active { display: block; }
+  .spinner {
+    width: 48px; height: 48px;
+    border: 4px solid #e2e8f0;
+    border-top-color: #3b82f6;
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+    margin: 0 auto 20px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .analyzing-overlay h3 { font-size: 18px; margin-bottom: 8px; }
+  .analyzing-overlay p { color: #64748b; font-size: 14px; }
+
+  /* Results */
+  #results { display: none; }
+
+  .verdict-banner {
+    border-radius: 12px;
+    padding: 22px 26px;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .verdict-banner.proceed { background: linear-gradient(135deg, #d1fae5, #a7f3d0); border: 1.5px solid #6ee7b7; }
+  .verdict-banner.caution { background: linear-gradient(135deg, #fef3c7, #fde68a); border: 1.5px solid #fcd34d; }
+  .verdict-banner.avoid { background: linear-gradient(135deg, #fee2e2, #fecaca); border: 1.5px solid #fca5a5; }
+  .verdict-icon { font-size: 38px; flex-shrink: 0; }
+  .verdict-text h2 { font-size: 19px; font-weight: 800; margin-bottom: 5px; }
+  .verdict-text p { font-size: 14px; line-height: 1.6; color: #374151; }
+
+  .scores-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; }
+  @media (max-width: 580px) { .scores-grid { grid-template-columns: 1fr; } }
+
+  .score-card {
+    background: white;
+    border-radius: 10px;
+    padding: 14px 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+  }
+  .score-label { font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+  .score-row { display: flex; align-items: center; gap: 10px; }
+  .score-num { font-size: 22px; font-weight: 800; min-width: 42px; }
+  .score-bar-bg { flex: 1; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+  .score-bar-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
+  .score-comment { font-size: 12px; color: #64748b; margin-top: 5px; }
+
+  .section-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+    margin-bottom: 14px;
+  }
+  .section-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
+  .section-card ul { padding-left: 18px; }
+  .section-card li { font-size: 13.5px; line-height: 1.7; color: #374151; margin-bottom: 4px; }
+  .section-card p { font-size: 13.5px; line-height: 1.7; color: #374151; }
+
+  .questions-list, .red-flags, .green-flags { list-style: none; padding: 0; }
+  .questions-list li { padding: 9px 13px; border-left: 3px solid #fbbf24; background: #fffbeb; border-radius: 0 6px 6px 0; font-size: 13.5px; margin-bottom: 7px; }
+  .red-flags li { padding: 9px 13px; border-left: 3px solid #ef4444; background: #fef2f2; border-radius: 0 6px 6px 0; font-size: 13.5px; margin-bottom: 7px; }
+  .green-flags li { padding: 9px 13px; border-left: 3px solid #10b981; background: #f0fdf4; border-radius: 0 6px 6px 0; font-size: 13.5px; margin-bottom: 7px; }
+
+  .error-box {
+    background: #fef2f2;
+    border: 1.5px solid #fca5a5;
+    border-radius: 10px;
+    padding: 16px 18px;
+    font-size: 13px;
+    color: #991b1b;
+    margin-top: 16px;
+    display: none;
+    line-height: 1.6;
+  }
+  .error-box strong { display: block; margin-bottom: 4px; }
 </style>
 </head>
 <body>
 
+<!-- Nav breadcrumb -->
 <div class="topbar">
-  <div class="topbar-logo">🏢 Business Acquisition Assessor</div>
-  <a href="index.html" class="back-link">← Back to portfolio</a>
+  <a href="index.html">← Sonal Agarwal</a>
+  <span class="topbar-sep">/</span>
+  <span class="topbar-title">Business Acquisition Assessor</span>
 </div>
 
-<div class="tabs">
-  <button class="tab-btn active" id="tab1" onclick="showPage('dashboard')">📊 My Pipeline</button>
-  <button class="tab-btn" id="tab2" onclick="showPage('assess')">➕ Assess a Business</button>
-  <button class="tab-btn" id="tab3" onclick="showPage('compare')">⚖️ Compare</button>
+<div class="header">
+  <div class="header-icon">🏢</div>
+  <div>
+    <h1>Business Acquisition Assessor</h1>
+    <p>For first-time buyers — understand if a business is worth buying before you commit</p>
+  </div>
 </div>
 
-<!-- PAGE: DASHBOARD -->
-<div class="page active" id="page-dashboard">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-    <div>
-      <div style="font-size:20px;font-weight:800;margin-bottom:3px;">Business Pipeline</div>
-      <div style="font-size:12px;color:var(--muted);">All businesses your broker has sent you — assessed and scored.</div>
+<div class="container">
+
+  <!-- API Key Panel -->
+  <div class="api-panel" id="apiPanel">
+    <h2>🔑 Enter your Anthropic API key to get started</h2>
+    <p>This tool uses Claude AI to analyse the business. You'll need an Anthropic API key — it's free to create one at <a href="https://console.anthropic.com" target="_blank" style="color:#6366f1">console.anthropic.com</a>.</p>
+    <div class="api-input-row">
+      <input type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." autocomplete="off">
+      <button class="btn-set-key" onclick="setApiKey()">Save Key</button>
     </div>
-    <button class="btn btn-primary" onclick="showPage('assess')">+ Assess New Business</button>
-  </div>
-  <div class="stats-row" id="statsRow"></div>
-  <div class="biz-grid" id="bizGrid"></div>
-  <div class="empty" id="emptyMsg" style="display:none;">
-    <div class="icon">🏢</div>
-    <h3>No businesses yet</h3>
-    <p>Add businesses your broker sends you and get a full AI assessment — scores, red flags, and questions to ask.</p>
-    <button class="btn btn-primary" onclick="showPage('assess')" style="margin-right:10px;">+ Assess a Business</button>
-    <button class="btn btn-ghost" onclick="runDemo()">Try demo first →</button>
-  </div>
-</div>
-
-<!-- PAGE: ASSESS -->
-<div class="page" id="page-assess">
-
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-    <div>
-      <div style="font-size:20px;font-weight:800;margin-bottom:3px;">Assess a Business</div>
-      <div style="font-size:12px;color:var(--muted);">Fill in what you know — Claude will do the rest.</div>
+    <div class="key-set-badge" id="keyBadge">✅ API key saved — ready to go!</div>
+    <p class="note">🔒 Your key is stored only in your browser memory for this session. It is never sent anywhere except directly to Anthropic's API.</p>
+    <div class="error-box" id="apiError">
+      <strong>Invalid or missing API key.</strong>
+      Please enter a valid Anthropic API key starting with <code>sk-ant-</code>.
     </div>
-    <button class="btn btn-ghost" onclick="runDemo()">Load demo data →</button>
   </div>
 
-  <!-- API KEY -->
-  <div class="api-bar">
-    <span style="font-size:12px;font-weight:600;color:var(--muted2);flex-shrink:0;">🔑 Claude API Key</span>
-    <input type="password" id="apiKey" placeholder="sk-ant-api03-...  (needed for AI analysis)">
-    <span style="font-size:11px;color:var(--muted);">No key? <a onclick="runDemo();return false;" href="#">Try demo →</a> &nbsp;|&nbsp; <a href="https://console.anthropic.com" target="_blank">Get a key ↗</a></span>
+  <!-- Progress -->
+  <div class="progress-bar">
+    <div class="progress-step active" id="ps-0" onclick="goToStep(0)"><span class="step-num">1</span>Business</div>
+    <div class="progress-step" id="ps-1" onclick="goToStep(1)"><span class="step-num">2</span>Financials</div>
+    <div class="progress-step" id="ps-2" onclick="goToStep(2)"><span class="step-num">3</span>Staff & Ops</div>
+    <div class="progress-step" id="ps-3" onclick="goToStep(3)"><span class="step-num">4</span>About You</div>
+    <div class="progress-step" id="ps-4" onclick="goToStep(4)"><span class="step-num">5</span>Assessment</div>
   </div>
 
-  <!-- FORM -->
-  <div class="card">
-    <h3>Business Overview</h3>
-    <div class="card-sub">Basic details from the broker listing</div>
-    <div class="grid2">
-      <div class="fgroup"><label>Business Name</label><input type="text" id="f-name" placeholder="e.g. Sunshine Pool Services"></div>
-      <div class="fgroup"><label>Industry / Type</label><input type="text" id="f-type" placeholder="e.g. Pool cleaning, GP clinic, Childcare"></div>
-      <div class="fgroup"><label>Location</label><input type="text" id="f-loc" placeholder="e.g. Brisbane, QLD"></div>
-      <div class="fgroup"><label>Years in Operation</label><input type="number" id="f-years" placeholder="e.g. 8" min="0"></div>
-      <div class="fgroup"><label>Asking Price ($AUD)</label><input type="number" id="f-price" placeholder="e.g. 650000"></div>
-      <div class="fgroup"><label>Business Structure</label>
-        <select id="f-structure">
-          <option value="">Select...</option>
-          <option>Sole Trader</option><option>Partnership</option>
-          <option>Pty Ltd Company</option><option>Trust</option><option>Franchise</option>
-        </select>
+  <!-- STEP 1: Business Info -->
+  <div class="step-panel active" id="step-0">
+    <div class="card">
+      <h2>Tell me about the business</h2>
+      <p class="subtitle">Paste in anything the agent or seller has sent you — the listing, brochure, job ads, emails, anything. The more detail, the better the assessment.</p>
+      <div class="step-intro">
+        💡 <strong>Don't worry if you don't have everything.</strong> Paste whatever you have. Even a basic description helps — we'll flag what's missing.
+      </div>
+      <div class="field-group">
+        <label>Business listing / agent description <span class="label-hint">(paste the main description here)</span></label>
+        <textarea class="tall" id="listing" placeholder="e.g. 'For sale: well-established cafe in Melbourne CBD. Asking $350,000. Turnover $800k/year. Owner retiring after 15 years...'"></textarea>
+      </div>
+      <div class="field-group">
+        <label>Job advertisements <span class="label-hint">(paste any job ads here — they reveal a lot)</span></label>
+        <textarea id="jobAds" placeholder="Job ads show what roles exist, who they're hiring, and how the business describes itself internally..."></textarea>
+      </div>
+      <div class="field-group">
+        <label>Any other documents or info <span class="label-hint">(emails from agent, brochures, inspection notes)</span></label>
+        <textarea id="otherDocs" placeholder="Anything else you've received or noted..."></textarea>
+      </div>
+      <div class="field-group">
+        <label>Type of business</label>
+        <div class="radio-group">
+          <label class="radio-btn"><input type="radio" name="bizType" value="cafe/restaurant"> ☕ Cafe / Restaurant</label>
+          <label class="radio-btn"><input type="radio" name="bizType" value="retail"> 🛍️ Retail Shop</label>
+          <label class="radio-btn"><input type="radio" name="bizType" value="service"> 🔧 Service Business</label>
+          <label class="radio-btn"><input type="radio" name="bizType" value="online"> 💻 Online Business</label>
+          <label class="radio-btn"><input type="radio" name="bizType" value="trade"> 🏗️ Trade / Construction</label>
+          <label class="radio-btn"><input type="radio" name="bizType" value="healthcare"> 🏥 Healthcare / Allied Health</label>
+          <label class="radio-btn"><input type="radio" name="bizType" value="other"> 📦 Other</label>
+        </div>
+      </div>
+      <div class="field-group">
+        <label>Asking price (if known)</label>
+        <input type="text" id="askingPrice" placeholder="e.g. $350,000 or 'not listed'">
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="nextStep()">Next: Financials →</button>
       </div>
     </div>
   </div>
 
-  <div class="card">
-    <h3>Financial Snapshot</h3>
-    <div class="card-sub">Most recent 12 months — leave blank if unknown</div>
-    <div class="grid2">
-      <div class="fgroup"><label>Annual Revenue ($AUD)</label><input type="number" id="f-rev" placeholder="e.g. 820000"></div>
-      <div class="fgroup"><label>Net Profit / Owner Earnings ($AUD)</label><input type="number" id="f-profit" placeholder="e.g. 180000"></div>
-      <div class="fgroup"><label>EBITDA ($AUD)</label><input type="number" id="f-ebitda" placeholder="e.g. 210000"></div>
-      <div class="fgroup"><label>Revenue Trend (Last 3 Years)</label>
-        <select id="f-growth">
-          <option value="">Unknown</option>
-          <option value="declining fast">Declining fast (>15% down)</option>
-          <option value="declining slightly">Declining slightly</option>
-          <option value="flat">Flat (0–5%)</option>
-          <option value="growing">Growing (5–20%)</option>
-          <option value="growing fast">Growing fast (>20%)</option>
-        </select>
+  <!-- STEP 2: Financials -->
+  <div class="step-panel" id="step-1">
+    <div class="card">
+      <h2>💰 Financial information</h2>
+      <p class="subtitle">The most important step. Answer what you can — skip anything you don't have yet.</p>
+      <div class="step-intro">
+        💡 <strong>Turnover vs profit?</strong> Turnover = total money coming IN. Profit = what's left after paying all bills. Both matter a lot.
       </div>
-      <div class="fgroup"><label>Stock / Inventory Value ($AUD)</label><input type="number" id="f-stock" placeholder="e.g. 45000"></div>
-      <div class="fgroup"><label>Plant &amp; Equipment Value ($AUD)</label><input type="number" id="f-plant" placeholder="e.g. 120000"></div>
-      <div class="fgroup"><label>Number of Employees</label><input type="number" id="f-staff" placeholder="e.g. 5" min="0"></div>
-      <div class="fgroup"><label>Owner Involvement</label>
-        <select id="f-owner">
-          <option value="">Unknown</option>
-          <option value="owner-operator (works full time in the business)">Owner-operator (full time)</option>
-          <option value="part-time owner involvement">Owner works part time</option>
-          <option value="fully managed / passive investment">Fully managed / passive</option>
-        </select>
+      <div class="field-group">
+        <label>Annual turnover / revenue <span class="label-hint">(total sales per year)</span></label>
+        <input type="text" id="turnover" placeholder="e.g. $800,000 or 'not provided'">
       </div>
-      <div class="fgroup"><label>Premises</label>
-        <select id="f-premises">
-          <option value="">Unknown</option>
-          <option value="leased premises">Leased</option>
-          <option value="owned by vendor and included">Owned, included in sale</option>
-          <option value="home-based">Home-based</option>
-          <option value="mobile / no fixed premises">Mobile</option>
-        </select>
+      <div class="field-group">
+        <label>Annual profit / net income <span class="label-hint">(what the owner takes home)</span></label>
+        <input type="text" id="profit" placeholder="e.g. $120,000 or 'not provided'">
       </div>
-      <div class="fgroup"><label>Reason for Sale</label><input type="text" id="f-reason" placeholder="e.g. Retirement, health, moving"></div>
+      <div class="field-group">
+        <label>Have you seen any financial statements? <span class="label-hint">(tax returns, P&L, balance sheet)</span></label>
+        <div class="radio-group">
+          <label class="radio-btn"><input type="radio" name="financials" value="yes_verified"> ✅ Yes, accountant verified</label>
+          <label class="radio-btn"><input type="radio" name="financials" value="yes_not_verified"> 📄 Yes, but not verified</label>
+          <label class="radio-btn"><input type="radio" name="financials" value="no"> ❌ Not yet</label>
+          <label class="radio-btn"><input type="radio" name="financials" value="refused"> 🚫 Owner refused to share</label>
+        </div>
+      </div>
+      <div class="field-group">
+        <label>How long has the business been operating?</label>
+        <div class="radio-group">
+          <label class="radio-btn"><input type="radio" name="yearsOp" value="under1"> Under 1 year</label>
+          <label class="radio-btn"><input type="radio" name="yearsOp" value="1to3"> 1–3 years</label>
+          <label class="radio-btn"><input type="radio" name="yearsOp" value="3to10"> 3–10 years</label>
+          <label class="radio-btn"><input type="radio" name="yearsOp" value="over10"> Over 10 years</label>
+          <label class="radio-btn"><input type="radio" name="yearsOp" value="unknown"> Don't know</label>
+        </div>
+      </div>
+      <div class="field-group">
+        <label>Why is the owner selling?</label>
+        <div class="radio-group">
+          <label class="radio-btn"><input type="radio" name="whySelling" value="retiring"> 👴 Retiring</label>
+          <label class="radio-btn"><input type="radio" name="whySelling" value="moving"> 🌏 Relocating</label>
+          <label class="radio-btn"><input type="radio" name="whySelling" value="other_business"> 💼 Other opportunity</label>
+          <label class="radio-btn"><input type="radio" name="whySelling" value="health"> 🏥 Health reasons</label>
+          <label class="radio-btn"><input type="radio" name="whySelling" value="not_profitable"> 📉 Business not performing</label>
+          <label class="radio-btn"><input type="radio" name="whySelling" value="not_stated"> ❓ Not stated</label>
+        </div>
+      </div>
+      <div class="field-group">
+        <label>Known debts, loans, or liabilities?</label>
+        <div class="radio-group">
+          <label class="radio-btn"><input type="radio" name="debts" value="none_stated"> None mentioned</label>
+          <label class="radio-btn"><input type="radio" name="debts" value="some"> Some mentioned</label>
+          <label class="radio-btn"><input type="radio" name="debts" value="significant"> Significant debts</label>
+          <label class="radio-btn"><input type="radio" name="debts" value="unknown"> Don't know</label>
+        </div>
+      </div>
+      <div class="field-group">
+        <label>Additional financial details <span class="label-hint">(paste any numbers or financial statements here)</span></label>
+        <textarea id="financialDetails" placeholder="e.g. 'FY2023 revenue $820k, FY2024 $750k, net profit $95k. Rent $4,500/month. 3 staff on payroll...'"></textarea>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+        <button class="btn btn-primary" onclick="nextStep()">Next: Staff & Ops →</button>
+      </div>
     </div>
   </div>
 
-  <div class="card">
-    <h3>Broker Information</h3>
-    <div class="card-sub">Paste anything the broker sent you — emails, information memorandums, summaries, financials</div>
-    <textarea id="f-broker" rows="9" placeholder="Paste all broker information here. The more detail you provide, the better the analysis. Include customer base info, revenue breakdown, assets, staff details, lease terms — anything you have."></textarea>
+  <!-- STEP 3: Staff & Operations -->
+  <div class="step-panel" id="step-2">
+    <div class="card">
+      <h2>👥 Staff & how it runs</h2>
+      <p class="subtitle">Understanding day-to-day operations is crucial before buying.</p>
+      <div class="step-intro">
+        💡 <strong>Key person risk:</strong> If the business only works because of one person (often the owner), that's a major red flag. You need it to run without them.
+      </div>
+      <div class="field-group">
+        <label>How many staff does it have?</label>
+        <div class="radio-group">
+          <label class="radio-btn"><input type="radio" name="staffCount" value="just_owner"> Just the owner</label>
+          <label class="radio-btn"><input type="radio" name="staffCount" value="1to3"> 1–3 staff</label>
+          <label class="radio-btn"><input type="radio" name="staffCount" value="4to10"> 4–10 staff</label>
+          <label class="radio-btn"><input type="radio" name="staffCount" value="over10"> More than 10</label>
+          <label class="radio-btn"><input type="radio" name="staffCount" value="unknown"> Don't know</label>
+        </div>
+      </div>
+      <div class="field-group">
+        <label>Can it run without the current owner?</label>
+        <div class="radio-group">
+          <label class="radio-btn"><input type="radio" name="ownerDep" value="yes"> ✅ Yes, managers in place</label>
+          <label class="radio-btn"><input type="radio" name="ownerDep" value="partially"> ⚠️ Partially</label>
+          <label class="radio-btn"><input type="radio" name="ownerDep" value="no"> ❌ No — owner is everything</label>
+          <label class="radio-btn"><input type="radio" name="ownerDep" value="unknown"> Don't know</label>
+        </div>
+      </div>
+      <div class="field-group">
+        <label>Lease situation?</label>
+        <div class="radio-group">
+          <label class="radio-btn"><input type="radio" name="lease" value="yes_long"> ✅ Long lease (3+ years)</label>
+          <label class="radio-btn"><input type="radio" name="lease" value="yes_short"> ⚠️ Short lease (under 2 years)</label>
+          <label class="radio-btn"><input type="radio" name="lease" value="owns_property"> 🏠 Owner owns property</label>
+          <label class="radio-btn"><input type="radio" name="lease" value="online_no_lease"> 💻 No premises needed</label>
+          <label class="radio-btn"><input type="radio" name="lease" value="unknown"> Don't know</label>
+        </div>
+      </div>
+      <div class="field-group">
+        <label>Customer base?</label>
+        <div class="radio-group">
+          <label class="radio-btn"><input type="radio" name="customers" value="repeat_loyal"> 🔄 Loyal repeat customers</label>
+          <label class="radio-btn"><input type="radio" name="customers" value="mixed"> 🔀 Mix of regulars and new</label>
+          <label class="radio-btn"><input type="radio" name="customers" value="few_big"> ⚠️ A few big clients</label>
+          <label class="radio-btn"><input type="radio" name="customers" value="foot_traffic"> 🚶 Walk-in / foot traffic</label>
+          <label class="radio-btn"><input type="radio" name="customers" value="unknown"> Don't know</label>
+        </div>
+      </div>
+      <div class="field-group">
+        <label>Major contracts or supplier agreements?</label>
+        <div class="radio-group">
+          <label class="radio-btn"><input type="radio" name="contracts" value="yes_transferable"> ✅ Yes, transfer to new owner</label>
+          <label class="radio-btn"><input type="radio" name="contracts" value="yes_unclear"> ⚠️ Yes, transfer unclear</label>
+          <label class="radio-btn"><input type="radio" name="contracts" value="no"> No major contracts</label>
+          <label class="radio-btn"><input type="radio" name="contracts" value="unknown"> Don't know</label>
+        </div>
+      </div>
+      <div class="field-group">
+        <label>Other staff or operations details?</label>
+        <textarea id="opsDetails" placeholder="e.g. 'Long-term manager who would stay. Equipment is aging. Seasonal — busiest Oct–March...'"></textarea>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+        <button class="btn btn-primary" onclick="nextStep()">Next: About You →</button>
+      </div>
+    </div>
   </div>
 
-  <div class="card">
-    <h3>Your Notes &amp; Concerns</h3>
-    <div class="card-sub">Anything specific you want Claude to focus on</div>
-    <textarea id="f-notes" rows="4" placeholder="e.g. I'm worried about customer concentration. Also not sure if the price is fair. What should I look out for?"></textarea>
+  <!-- STEP 4: Buyer -->
+  <div class="step-panel" id="step-3">
+    <div class="card">
+      <h2>🙋 About you</h2>
+      <p class="subtitle">This helps tailor the assessment to your situation as the buyer.</p>
+      <div class="field-group">
+        <label>Have you run a business before?</label>
+        <div class="radio-group">
+          <label class="radio-btn"><input type="radio" name="experience" value="never"> First time</label>
+          <label class="radio-btn"><input type="radio" name="experience" value="some"> Some experience</label>
+          <label class="radio-btn"><input type="radio" name="experience" value="yes"> Yes, experienced</label>
+        </div>
+      </div>
+      <div class="field-group">
+        <label>Industry experience in this type of business?</label>
+        <div class="radio-group">
+          <label class="radio-btn"><input type="radio" name="industryExp" value="yes"> ✅ Yes, I know this industry</label>
+          <label class="radio-btn"><input type="radio" name="industryExp" value="some"> Somewhat familiar</label>
+          <label class="radio-btn"><input type="radio" name="industryExp" value="no"> ❌ Brand new to me</label>
+        </div>
+      </div>
+      <div class="field-group">
+        <label>How are you funding this?</label>
+        <div class="radio-group">
+          <label class="radio-btn"><input type="radio" name="funding" value="cash"> 💵 Cash / savings</label>
+          <label class="radio-btn"><input type="radio" name="funding" value="loan"> 🏦 Bank loan</label>
+          <label class="radio-btn"><input type="radio" name="funding" value="mixed"> 🔀 Mix of both</label>
+          <label class="radio-btn"><input type="radio" name="funding" value="unsure"> Not sure yet</label>
+        </div>
+      </div>
+      <div class="field-group">
+        <label>Have you consulted a professional?</label>
+        <div class="radio-group">
+          <label class="radio-btn"><input type="radio" name="professionals" value="accountant"> 🧮 Accountant</label>
+          <label class="radio-btn"><input type="radio" name="professionals" value="lawyer"> ⚖️ Lawyer</label>
+          <label class="radio-btn"><input type="radio" name="professionals" value="both"> Both</label>
+          <label class="radio-btn"><input type="radio" name="professionals" value="none"> Not yet</label>
+        </div>
+      </div>
+      <div class="field-group">
+        <label>What's your biggest concern about buying this business?</label>
+        <textarea id="concerns" placeholder="What's worrying you or what are you unsure about?"></textarea>
+      </div>
+      <div class="tip-box">
+        <strong>⚠️ Important</strong>
+        This tool gives you a starting point — not legal or financial advice. Always get an accountant to verify the financials and a lawyer to review contracts before signing anything.
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
+        <button class="btn btn-analyze" onclick="runAnalysis()">🔍 Generate My Assessment</button>
+      </div>
+    </div>
   </div>
 
-  <div class="error" id="errBox"></div>
+  <!-- STEP 5: Results -->
+  <div class="step-panel" id="step-4">
 
-  <button class="btn btn-primary btn-big" onclick="runAnalysis()">🔍 Analyse This Business</button>
-  <div style="text-align:center;margin-top:10px;">
-    <button class="btn btn-ghost" onclick="runDemo()" style="font-size:11px;">Or load pool cleaning demo →</button>
+    <div class="analyzing-overlay active" id="loadingPanel">
+      <div class="spinner"></div>
+      <h3>Analysing the business...</h3>
+      <p>Reviewing everything you've shared and assessing key risk areas...</p>
+    </div>
+
+    <div id="results">
+      <div id="verdictBanner" class="verdict-banner">
+        <div class="verdict-icon" id="verdictIcon"></div>
+        <div class="verdict-text">
+          <h2 id="verdictTitle"></h2>
+          <p id="verdictSummary"></p>
+        </div>
+      </div>
+      <div class="scores-grid" id="scoresGrid"></div>
+      <div id="greenFlagsCard" class="section-card" style="display:none">
+        <h3>✅ Positive signs</h3>
+        <ul class="green-flags" id="greenFlagsList"></ul>
+      </div>
+      <div id="redFlagsCard" class="section-card" style="display:none">
+        <h3>🚩 Red flags & concerns</h3>
+        <ul class="red-flags" id="redFlagsList"></ul>
+      </div>
+      <div id="questionsCard" class="section-card" style="display:none">
+        <h3>❓ Questions to ask before proceeding</h3>
+        <p style="font-size:13px;color:#64748b;margin-bottom:10px;">Get answers to these before making any decision:</p>
+        <ul class="questions-list" id="questionsList"></ul>
+      </div>
+      <div id="nextStepsCard" class="section-card" style="display:none">
+        <h3>📋 Your next steps</h3>
+        <ul id="nextStepsList"></ul>
+      </div>
+      <div id="fullAnalysisCard" class="section-card" style="display:none">
+        <h3>📝 Full analysis</h3>
+        <p id="fullAnalysis" style="white-space:pre-line;"></p>
+      </div>
+      <div class="error-box" id="resultError">
+        <strong>Something went wrong.</strong>
+        <span id="resultErrorMsg"></span> Please check your API key and try again.
+      </div>
+      <div class="btn-row" style="margin-top:20px">
+        <button class="btn btn-restart" onclick="restartAssessment()">↩ Start new assessment</button>
+      </div>
+    </div>
+
   </div>
 
-  <!-- RESULTS (shown below form after analysis) -->
-  <div class="results-panel" id="resultsPanel">
-    <div style="height:1px;background:var(--border);margin:32px 0;"></div>
-    <div style="font-size:18px;font-weight:800;margin-bottom:20px;">📋 Assessment Results</div>
-    <div id="resultsContent"></div>
-  </div>
-
-</div>
-
-<!-- PAGE: COMPARE -->
-<div class="page" id="page-compare">
-  <div style="font-size:20px;font-weight:800;margin-bottom:6px;">Compare Businesses</div>
-  <div style="font-size:12px;color:var(--muted);margin-bottom:24px;">Side-by-side view of all assessed businesses.</div>
-  <div id="compareContent"></div>
-</div>
-
-<!-- LOADING -->
-<div class="overlay" id="loadingOverlay">
-  <div class="loading-box">
-    <div class="spinner"></div>
-    <div style="font-size:15px;font-weight:700;margin-bottom:4px;">Analysing business...</div>
-    <div style="font-size:12px;color:var(--muted);">Claude is reviewing all the details</div>
-    <div id="lstep1" class="lstep">✓ Reading financial data</div>
-    <div id="lstep2" class="lstep">✓ Reviewing broker documents</div>
-    <div id="lstep3" class="lstep">✓ Calculating valuation multiples</div>
-    <div id="lstep4" class="lstep">✓ Identifying risks and red flags</div>
-    <div id="lstep5" class="lstep">✓ Generating broker questions</div>
-  </div>
 </div>
 
 <script>
-// ---- STATE ----
-var saved = [];
-try { saved = JSON.parse(localStorage.getItem('biz_v2') || '[]'); } catch(e) { saved = []; }
-function persist() { try { localStorage.setItem('biz_v2', JSON.stringify(saved)); } catch(e) {} }
+let apiKey = '';
+let currentStep = 0;
 
-// ---- TABS ----
-function showPage(name) {
-  ['dashboard','assess','compare'].forEach(function(p) {
-    document.getElementById('page-' + p).classList.remove('active');
-  });
-  document.getElementById('tab1').classList.remove('active');
-  document.getElementById('tab2').classList.remove('active');
-  document.getElementById('tab3').classList.remove('active');
-  document.getElementById('page-' + name).classList.add('active');
-  var tabMap = {dashboard:'tab1', assess:'tab2', compare:'tab3'};
-  document.getElementById(tabMap[name]).classList.add('active');
-  if (name === 'compare') renderCompare();
-  if (name === 'dashboard') renderDashboard();
-  window.scrollTo(0, 0);
-}
-
-// ---- DASHBOARD ----
-function renderDashboard() {
-  var grid = document.getElementById('bizGrid');
-  var empty = document.getElementById('emptyMsg');
-  var stats = document.getElementById('statsRow');
-
-  if (saved.length === 0) {
-    grid.innerHTML = '';
-    stats.innerHTML = '';
-    empty.style.display = 'block';
+// API key
+function setApiKey() {
+  const val = document.getElementById('apiKeyInput').value.trim();
+  if (!val.startsWith('sk-ant-') && !val.startsWith('sk-')) {
+    document.getElementById('apiError').style.display = 'block';
     return;
   }
-  empty.style.display = 'none';
-
-  var total = saved.length;
-  var strongBuy = 0, consider = 0, passCount = 0;
-  saved.forEach(function(b) {
-    if (b.recommendation === 'strong_buy') strongBuy++;
-    else if (b.recommendation === 'consider') consider++;
-    else if (b.recommendation === 'caution' || b.recommendation === 'pass') passCount++;
-  });
-
-  stats.innerHTML =
-    statCard(total, 'Total Assessed', var_accent()) +
-    statCard(strongBuy, 'Strong Buy', var_green()) +
-    statCard(consider, 'Consider', var_yellow()) +
-    statCard(passCount, 'Pass / Caution', var_red());
-
-  var html = '';
-  saved.forEach(function(b) {
-    var sc = scoreColor(b.score);
-    var rec = recLabel(b.recommendation);
-    var recBg = recBadgeClass(b.recommendation);
-    html += '<div class="biz-card" onclick="viewResult(' + b.id + ')">';
-    html += '<div style="display:flex;justify-content:space-between;">';
-    html += '<div class="type">' + (b.type || 'Business') + '</div>';
-    html += '<button class="del-btn" onclick="event.stopPropagation();deleteBiz(' + b.id + ')">🗑</button>';
-    html += '</div>';
-    html += '<div class="name">' + esc(b.name) + '</div>';
-    html += '<div class="price">' + (b.askingPrice ? '$' + num(b.askingPrice) + ' asking' : 'Price TBC') + (b.location ? ' · ' + esc(b.location) : '') + '</div>';
-    if (b.annualRevenue || b.netProfit) {
-      html += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">';
-      if (b.annualRevenue) html += '<span style="font-size:11px;background:var(--card2);padding:2px 8px;border-radius:4px;color:var(--muted2)">Rev $' + shortNum(b.annualRevenue) + '</span>';
-      if (b.netProfit) html += '<span style="font-size:11px;background:var(--card2);padding:2px 8px;border-radius:4px;color:var(--muted2)">Profit $' + shortNum(b.netProfit) + '</span>';
-      html += '</div>';
-    }
-    html += '<div class="bottom">';
-    html += '<div class="score-circle ' + sc + '">' + b.score + '</div>';
-    html += '<span class="badge ' + recBg + '">' + rec + '</span>';
-    html += '<span style="font-size:10px;color:var(--muted);">' + fmtDate(b.date) + '</span>';
-    html += '</div></div>';
-  });
-  grid.innerHTML = html;
+  apiKey = val;
+  document.getElementById('apiError').style.display = 'none';
+  document.getElementById('keyBadge').classList.add('visible');
+  document.getElementById('apiKeyInput').value = '•'.repeat(20);
 }
 
-function statCard(n, label, color) {
-  return '<div class="stat"><div class="n" style="color:' + color + '">' + n + '</div><div class="l">' + label + '</div></div>';
+// Radio buttons
+document.addEventListener('click', function(e) {
+  const btn = e.target.closest('.radio-btn');
+  if (!btn) return;
+  const group = btn.parentElement;
+  group.querySelectorAll('.radio-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  const inp = btn.querySelector('input');
+  if (inp) inp.checked = true;
+});
+
+function nextStep() { if (currentStep < 4) goToStep(currentStep + 1); }
+function prevStep() { if (currentStep > 0) goToStep(currentStep - 1); }
+
+function goToStep(n) {
+  document.getElementById(`step-${currentStep}`).classList.remove('active');
+  document.getElementById(`ps-${currentStep}`).classList.remove('active');
+  if (n > currentStep) document.getElementById(`ps-${currentStep}`).classList.add('done');
+  currentStep = n;
+  document.getElementById(`step-${currentStep}`).classList.add('active');
+  for (let i = 0; i <= 4; i++) {
+    const ps = document.getElementById(`ps-${i}`);
+    ps.classList.remove('active', 'done');
+    if (i < currentStep) ps.classList.add('done');
+    else if (i === currentStep) ps.classList.add('active');
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function deleteBiz(id) {
-  if (!confirm('Remove this business?')) return;
-  saved = saved.filter(function(b) { return b.id !== id; });
-  persist();
-  renderDashboard();
+function getRadioValue(name) {
+  const el = document.querySelector(`input[name="${name}"]:checked`);
+  return el ? el.value : 'not answered';
 }
 
-function viewResult(id) {
-  var b = saved.find(function(x) { return x.id === id; });
-  if (!b) return;
-  showPage('assess');
-  fillForm(b);
-  showResults(b);
-}
-
-// ---- FORM HELPERS ----
-function getVal(id) { return document.getElementById(id).value.trim(); }
-function setVal(id, v) { document.getElementById(id).value = v || ''; }
-
-function fillForm(b) {
-  setVal('f-name', b.name);
-  setVal('f-type', b.type);
-  setVal('f-loc', b.location);
-  setVal('f-years', b.years);
-  setVal('f-price', b.askingPrice);
-  setVal('f-structure', b.structure);
-  setVal('f-rev', b.annualRevenue);
-  setVal('f-profit', b.netProfit);
-  setVal('f-ebitda', b.ebitda);
-  setVal('f-growth', b.growth);
-  setVal('f-stock', b.stock);
-  setVal('f-plant', b.plant);
-  setVal('f-staff', b.staff);
-  setVal('f-owner', b.owner);
-  setVal('f-premises', b.premises);
-  setVal('f-reason', b.reason);
-  setVal('f-broker', b.brokerNotes);
-  setVal('f-notes', b.yourNotes);
-}
-
-function readForm() {
+function collectData() {
   return {
-    name: getVal('f-name') || 'Unnamed Business',
-    type: getVal('f-type'),
-    location: getVal('f-loc'),
-    years: getVal('f-years'),
-    askingPrice: getVal('f-price'),
-    structure: getVal('f-structure'),
-    annualRevenue: getVal('f-rev'),
-    netProfit: getVal('f-profit'),
-    ebitda: getVal('f-ebitda'),
-    growth: getVal('f-growth'),
-    stock: getVal('f-stock'),
-    plant: getVal('f-plant'),
-    staff: getVal('f-staff'),
-    owner: getVal('f-owner'),
-    premises: getVal('f-premises'),
-    reason: getVal('f-reason'),
-    brokerNotes: getVal('f-broker'),
-    yourNotes: getVal('f-notes')
+    listing: document.getElementById('listing').value,
+    jobAds: document.getElementById('jobAds').value,
+    otherDocs: document.getElementById('otherDocs').value,
+    bizType: getRadioValue('bizType'),
+    askingPrice: document.getElementById('askingPrice').value,
+    turnover: document.getElementById('turnover').value,
+    profit: document.getElementById('profit').value,
+    financials: getRadioValue('financials'),
+    yearsOp: getRadioValue('yearsOp'),
+    whySelling: getRadioValue('whySelling'),
+    debts: getRadioValue('debts'),
+    financialDetails: document.getElementById('financialDetails').value,
+    staffCount: getRadioValue('staffCount'),
+    ownerDep: getRadioValue('ownerDep'),
+    lease: getRadioValue('lease'),
+    customers: getRadioValue('customers'),
+    contracts: getRadioValue('contracts'),
+    opsDetails: document.getElementById('opsDetails').value,
+    experience: getRadioValue('experience'),
+    industryExp: getRadioValue('industryExp'),
+    funding: getRadioValue('funding'),
+    professionals: getRadioValue('professionals'),
+    concerns: document.getElementById('concerns').value,
   };
 }
 
-// ---- ANALYSIS ----
-function runAnalysis() {
-  var apiKey = getVal('apiKey');
-  var err = document.getElementById('errBox');
-  err.className = 'error';
-
+async function runAnalysis() {
   if (!apiKey) {
-    err.textContent = 'Please enter your Claude API key above. Or click "Load demo data" to try without one.';
-    err.className = 'error show';
+    alert('Please enter your Anthropic API key at the top of the page first.');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     return;
   }
 
-  var data = readForm();
-  showLoading();
+  goToStep(4);
+  document.getElementById('loadingPanel').classList.add('active');
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('resultError').style.display = 'none';
 
-  var multipleE = (data.askingPrice && data.ebitda) ? (parseFloat(data.askingPrice) / parseFloat(data.ebitda)).toFixed(2) + 'x' : 'unknown';
-  var multipleP = (data.askingPrice && data.netProfit) ? (parseFloat(data.askingPrice) / parseFloat(data.netProfit)).toFixed(2) + 'x' : 'unknown';
+  const data = collectData();
 
-  var prompt = 'You are a senior Australian business acquisition advisor. Analyse this business opportunity and return ONLY a valid JSON object. No explanation outside the JSON.\n\n';
-  prompt += 'BUSINESS: ' + data.name + '\n';
-  prompt += 'Type: ' + (data.type || 'Unknown') + '\n';
-  prompt += 'Location: ' + (data.location || 'Unknown') + '\n';
-  prompt += 'Years operating: ' + (data.years || 'Unknown') + '\n';
-  prompt += 'Structure: ' + (data.structure || 'Unknown') + '\n';
-  prompt += 'Asking price: ' + (data.askingPrice ? '$' + data.askingPrice : 'Unknown') + '\n';
-  prompt += 'Annual revenue: ' + (data.annualRevenue ? '$' + data.annualRevenue : 'Unknown') + '\n';
-  prompt += 'Net profit: ' + (data.netProfit ? '$' + data.netProfit : 'Unknown') + '\n';
-  prompt += 'EBITDA: ' + (data.ebitda ? '$' + data.ebitda : 'Unknown') + '\n';
-  prompt += 'Revenue growth: ' + (data.growth || 'Unknown') + '\n';
-  prompt += 'Stock value: ' + (data.stock ? '$' + data.stock : 'Unknown') + '\n';
-  prompt += 'Plant & equipment: ' + (data.plant ? '$' + data.plant : 'Unknown') + '\n';
-  prompt += 'Employees: ' + (data.staff || 'Unknown') + '\n';
-  prompt += 'Owner involvement: ' + (data.owner || 'Unknown') + '\n';
-  prompt += 'Premises: ' + (data.premises || 'Unknown') + '\n';
-  prompt += 'Reason for sale: ' + (data.reason || 'Not stated') + '\n';
-  prompt += 'EBITDA multiple: ' + multipleE + '\n';
-  prompt += 'Profit multiple: ' + multipleP + '\n\n';
-  prompt += 'BROKER INFO:\n' + (data.brokerNotes || 'None provided') + '\n\n';
-  prompt += 'BUYER CONCERNS:\n' + (data.yourNotes || 'None') + '\n\n';
-  prompt += 'Return this JSON (no trailing commas):\n';
-  prompt += '{"score":0-100,"recommendation":"strong_buy|consider|caution|pass","summary":"2-3 sentences","financialScore":0-100,"businessScore":0-100,"riskScore":0-100,"valuationScore":0-100,';
-  prompt += '"flags":[{"type":"red|yellow|green","text":"specific finding"}],';
-  prompt += '"questions":[{"cat":"Financial|Operational|Legal|Market|Staff","q":"specific question"}],';
-  prompt += '"valuation":{"multipleEbitda":3.5,"fairRange":"$X-$Y","negotiateTarget":"$X","note":"2 sentences on price fairness"}}\n\n';
-  prompt += 'Rules: 3-5 red flags, 2-4 yellow, 2-4 green. 18-22 questions across all categories. All specific to THIS business. Australian context. riskScore: higher = safer.';
+  const prompt = `You are a business acquisition advisor helping a first-time buyer assess a business for sale. Analyse the information below and provide a structured assessment.
 
-  fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true'
-    },
-    body: JSON.stringify({
-      model: 'claude-opus-4-6',
-      max_tokens: 4000,
-      messages: [{ role: 'user', content: prompt }]
-    })
-  })
-  .then(function(res) { return res.json(); })
-  .then(function(data2) {
-    hideLoading();
-    if (data2.error) { showErr('API error: ' + data2.error.message); return; }
-    var raw = (data2.content && data2.content[0]) ? data2.content[0].text : '';
-    var match = raw.match(/\{[\s\S]*\}/);
-    if (!match) { showErr('Could not parse response. Please try again.'); return; }
-    var result;
-    try { result = JSON.parse(match[0]); } catch(e) { showErr('JSON parse error. Please try again.'); return; }
-    var biz = buildBiz(data, result);
-    saved = saved.filter(function(x) { return x.name !== biz.name; });
-    saved.unshift(biz);
-    persist();
-    showResults(biz);
-  })
-  .catch(function(e) {
-    hideLoading();
-    showErr('Error: ' + e.message);
-  });
-}
+BUSINESS INFORMATION:
+Type: ${data.bizType}
+Asking price: ${data.askingPrice}
+Business listing/description: ${data.listing || 'Not provided'}
+Job advertisements: ${data.jobAds || 'Not provided'}
+Other documents: ${data.otherDocs || 'Not provided'}
 
-function buildBiz(data, result) {
-  return {
-    id: Date.now(),
-    name: data.name, type: data.type, location: data.location,
-    years: data.years, askingPrice: parseFloat(data.askingPrice) || 0,
-    structure: data.structure, annualRevenue: parseFloat(data.annualRevenue) || 0,
-    netProfit: parseFloat(data.netProfit) || 0, ebitda: parseFloat(data.ebitda) || 0,
-    growth: data.growth, stock: data.stock, plant: data.plant,
-    staff: data.staff, owner: data.owner, premises: data.premises,
-    reason: data.reason, brokerNotes: data.brokerNotes, yourNotes: data.yourNotes,
-    score: result.score || 0, recommendation: result.recommendation || 'consider',
-    summary: result.summary || '', financialScore: result.financialScore || 0,
-    businessScore: result.businessScore || 0, riskScore: result.riskScore || 0,
-    valuationScore: result.valuationScore || 0,
-    flags: result.flags || [], questions: result.questions || [],
-    valuation: result.valuation || {},
-    date: new Date().toISOString()
-  };
-}
+FINANCIALS:
+Annual turnover: ${data.turnover}
+Annual profit: ${data.profit}
+Financial statements seen: ${data.financials}
+Years operating: ${data.yearsOp}
+Why selling: ${data.whySelling}
+Known debts: ${data.debts}
+Additional financial details: ${data.financialDetails || 'None'}
 
-function showResults(b) {
-  var panel = document.getElementById('resultsPanel');
-  var content = document.getElementById('resultsContent');
-  panel.className = 'results-panel show';
+STAFF & OPERATIONS:
+Staff count: ${data.staffCount}
+Business can run without owner: ${data.ownerDep}
+Lease situation: ${data.lease}
+Customer base: ${data.customers}
+Contracts: ${data.contracts}
+Other ops details: ${data.opsDetails || 'None'}
 
-  var sc = scoreColor(b.score);
-  var rec = recLabel(b.recommendation);
-  var recBg = recBadgeClass(b.recommendation);
+BUYER PROFILE:
+Business experience: ${data.experience}
+Industry experience: ${data.industryExp}
+Funding method: ${data.funding}
+Professionals consulted: ${data.professionals}
+Main concern: ${data.concerns || 'None stated'}
 
-  var html = '';
+Respond ONLY with a valid JSON object (no markdown, no code fences) in this exact structure:
+{
+  "verdict": "PROCEED" or "CAUTION" or "AVOID",
+  "verdictSummary": "2-3 sentence plain English summary",
+  "scores": {
+    "financial": { "score": 0-10, "comment": "one sentence" },
+    "operations": { "score": 0-10, "comment": "one sentence" },
+    "market": { "score": 0-10, "comment": "one sentence" },
+    "risk": { "score": 0-10, "comment": "one sentence" }
+  },
+  "greenFlags": ["positive 1", "positive 2"],
+  "redFlags": ["red flag 1", "red flag 2"],
+  "questionsToAsk": ["question 1", "question 2"],
+  "nextSteps": ["step 1", "step 2"],
+  "fullAnalysis": "3-5 paragraphs of plain English analysis for a first-time buyer. No jargon."
+}`;
 
-  // Header
-  html += '<div class="result-header">';
-  html += '<div style="display:flex;align-items:center;gap:16px;margin-bottom:12px;">';
-  html += '<div class="score-big ' + sc + '">' + b.score + '</div>';
-  html += '<div><div style="font-size:16px;font-weight:800;">' + esc(b.name) + '</div>';
-  html += '<div style="font-size:12px;color:var(--muted2);margin-bottom:6px;">' + (b.type || '') + (b.location ? ' · ' + b.location : '') + '</div>';
-  html += '<span class="badge ' + recBg + '" style="font-size:12px;padding:4px 12px;">' + rec + '</span></div></div>';
-  html += '<div style="font-size:13px;color:var(--muted2);line-height:1.7;">' + esc(b.summary) + '</div>';
-  html += '<div class="sub-scores">';
-  html += subScore(b.financialScore, 'Financial Health');
-  html += subScore(b.businessScore, 'Business Quality');
-  html += subScore(b.riskScore, 'Risk Level');
-  html += subScore(b.valuationScore, 'Valuation Fairness');
-  html += '</div></div>';
-
-  // Red flags
-  var reds = (b.flags || []).filter(function(f) { return f.type === 'red'; });
-  if (reds.length) {
-    html += '<div class="card"><div class="section-title">🔴 Red Flags — Must Investigate</div>';
-    reds.forEach(function(f) {
-      html += '<div class="flag flag-red"><span class="flag-icon">🚨</span><span>' + esc(f.text) + '</span></div>';
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 2000,
+        messages: [{ role: 'user', content: prompt }]
+      })
     });
-    html += '</div>';
-  }
 
-  // Yellow warnings
-  var yellows = (b.flags || []).filter(function(f) { return f.type === 'yellow'; });
-  if (yellows.length) {
-    html += '<div class="card"><div class="section-title">🟡 Caution Points</div>';
-    yellows.forEach(function(f) {
-      html += '<div class="flag flag-yellow"><span class="flag-icon">⚠️</span><span>' + esc(f.text) + '</span></div>';
-    });
-    html += '</div>';
-  }
-
-  // Greens
-  var greens = (b.flags || []).filter(function(f) { return f.type === 'green'; });
-  if (greens.length) {
-    html += '<div class="card"><div class="section-title">🟢 Positives</div>';
-    greens.forEach(function(f) {
-      html += '<div class="flag flag-green"><span class="flag-icon">✅</span><span>' + esc(f.text) + '</span></div>';
-    });
-    html += '</div>';
-  }
-
-  // Valuation
-  if (b.valuation && (b.valuation.fairRange || b.valuation.note)) {
-    html += '<div class="card"><div class="section-title">💰 Valuation Analysis</div>';
-    html += '<div class="val-grid">';
-    html += '<div class="val-box"><div class="v" style="color:var(--accent);">' + (b.valuation.multipleEbitda ? b.valuation.multipleEbitda + '×' : '—') + '</div><div class="l">EBITDA Multiple</div></div>';
-    html += '<div class="val-box"><div class="v" style="color:var(--green);font-size:13px;">' + (b.valuation.fairRange || '—') + '</div><div class="l">Fair Value Range</div></div>';
-    html += '<div class="val-box"><div class="v" style="color:var(--yellow);font-size:13px;">' + (b.valuation.negotiateTarget || '—') + '</div><div class="l">Negotiate Toward</div></div>';
-    html += '</div>';
-    if (b.valuation.note) html += '<div class="flag flag-yellow"><span class="flag-icon">💡</span><span>' + esc(b.valuation.note) + '</span></div>';
-    html += '</div>';
-  }
-
-  // Questions
-  var questions = b.questions || [];
-  if (questions.length) {
-    html += '<div class="card"><div class="section-title">❓ Questions to Ask Your Broker</div>';
-    html += '<div style="font-size:11px;color:var(--muted);margin-bottom:14px;">Screenshot or print this list before your next broker conversation.</div>';
-    var cats = ['Financial', 'Operational', 'Legal', 'Market', 'Staff'];
-    var catClass = {Financial:'qc-fin', Operational:'qc-ops', Legal:'qc-leg', Market:'qc-mkt', Staff:'qc-sta'};
-    var qNum = 0;
-    cats.forEach(function(cat) {
-      var qs = questions.filter(function(q) { return q.cat === cat; });
-      if (!qs.length) return;
-      html += '<div style="margin-bottom:14px;"><div style="font-size:11px;font-weight:700;color:var(--muted2);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px;">' + cat + '</div>';
-      qs.forEach(function(q) {
-        qNum++;
-        html += '<div class="q-item">';
-        html += '<span class="q-num">' + qNum + '.</span>';
-        html += '<span class="q-cat ' + (catClass[cat] || '') + '">' + cat + '</span>';
-        html += '<span>' + esc(q.q) + '</span>';
-        html += '</div>';
-      });
-      html += '</div>';
-    });
-    html += '</div>';
-  }
-
-  html += '<div style="display:flex;gap:10px;margin-top:4px;">';
-  html += '<button class="btn btn-ghost" onclick="window.print()" style="flex:1;">🖨️ Print / Export</button>';
-  html += '<button class="btn btn-ghost" onclick="showPage(\'dashboard\')" style="flex:1;">← Back to Pipeline</button>';
-  html += '</div>';
-
-  content.innerHTML = html;
-  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-function subScore(v, label) {
-  var c = v >= 70 ? 'var(--green)' : v >= 50 ? 'var(--yellow)' : 'var(--red)';
-  return '<div class="sub-score"><div class="v" style="color:' + c + ';">' + v + '</div><div class="l">' + label + '</div></div>';
-}
-
-// ---- DEMO ----
-function runDemo() {
-  setVal('f-name', 'Sunshine Pool Services');
-  setVal('f-type', 'Pool Cleaning & Maintenance');
-  setVal('f-loc', 'Brisbane, QLD');
-  setVal('f-years', '9');
-  setVal('f-price', '650000');
-  setVal('f-structure', 'Sole Trader');
-  setVal('f-rev', '420000');
-  setVal('f-profit', '148000');
-  setVal('f-ebitda', '165000');
-  setVal('f-growth', 'growing');
-  setVal('f-stock', '22000');
-  setVal('f-plant', '85000');
-  setVal('f-staff', '4');
-  setVal('f-owner', 'owner-operator (works full time in the business)');
-  setVal('f-premises', 'mobile / no fixed premises');
-  setVal('f-reason', 'Retirement — owner is 67 and wants to travel');
-  setVal('f-broker', 'Established in 2015. 312 recurring accounts (weekly/fortnightly). Revenue: $420k. EBITDA: $165k. 4 casual staff. Owner does 35% of rounds personally. Commercial contract with Northside Fitness worth $38k/yr expires Oct 2026. 3 vans included. Skimmer software. 4.8 stars, 187 Google reviews. Owner doing 3-month handover.');
-  setVal('f-notes', 'Worried about owner dependency — will customers leave when he goes? Is the asking price fair? What about the commercial contract renewal?');
-  showPage('assess');
-
-  var demoResult = {
-    score: 74, recommendation: 'consider',
-    summary: 'Sunshine Pool Services is a well-run, systemised pool maintenance business with strong recurring revenue and loyal customers. The $650k asking price is slightly above fair value at 3.94x EBITDA — typical for this type of business is 2.5–3.5x. Key risks are owner dependency and an expiring commercial contract, but the business has genuine strengths worth pursuing with the right negotiation.',
-    financialScore: 72, businessScore: 76, riskScore: 65, valuationScore: 68,
-    flags: [
-      { type: 'red', text: 'Owner personally runs 35% of service rounds — customer relationships may follow him when he leaves. This is the single biggest risk to revenue post-sale.' },
-      { type: 'red', text: 'Northside Fitness contract ($38k/yr, 9% of revenue) expires Oct 2026 with renewal only "pending" — must be confirmed before settlement or priced into a reduced offer.' },
-      { type: 'yellow', text: 'All 4 staff are casual — zero legal obligation to stay post-sale. Retaining the 2 senior technicians should be a condition of purchase.' },
-      { type: 'yellow', text: 'Asking price of 3.94x EBITDA is above the typical 2.5–3.5x range for owner-operated service businesses. Target $550k–$580k in negotiation.' },
-      { type: 'yellow', text: 'Sole trader structure means goodwill, phone number, and Google reviews are all in the owner\'s name — transition plan needs to be part of the contract.' },
-      { type: 'green', text: '312 recurring accounts with 4.2yr average tenure is excellent — this is sticky, predictable revenue that will largely survive a sale.' },
-      { type: 'green', text: 'No customer concentration risk — top 10 customers = 18% of revenue, no single client over 5%.' },
-      { type: 'green', text: 'Fully systemised via Skimmer software with all routes, histories, and customer data transferable. Low operational risk.' },
-      { type: 'green', text: '3 vans and all equipment included — minimal capital expenditure required in the first 2 years post-purchase.' }
-    ],
-    questions: [
-      { cat: 'Financial', q: 'Can you provide 3 years of verified P&L statements and BAS lodgements to confirm the $148k net profit figure?' },
-      { cat: 'Financial', q: 'What are the owner\'s annual drawings/salary included in the financials? We need to add this back to get true EBITDA.' },
-      { cat: 'Financial', q: 'Are there any outstanding ATO debts, GST liabilities, or unpaid superannuation we should know about?' },
-      { cat: 'Financial', q: 'Full details on the Northside Fitness contract — exact expiry date, renewal terms, and written confirmation from the client that they intend to renew?' },
-      { cat: 'Operational', q: 'Which specific accounts does the owner personally service, and have any of those customers been told the business is for sale?' },
-      { cat: 'Operational', q: 'What does the 3-month handover actually include — will the owner personally introduce us to all his accounts, or is it just training on systems?' },
-      { cat: 'Operational', q: 'How many of the 312 accounts are on formal written service agreements vs informal arrangements?' },
-      { cat: 'Operational', q: 'What is the average revenue per account per year, and when was pricing last increased?' },
-      { cat: 'Staff', q: 'Have the 4 technicians been told the business is for sale? What is their reaction, and will they commit to staying post-sale?' },
-      { cat: 'Staff', q: 'What are the full employment terms for each technician — hours, pay rate, and any entitlements outstanding?' },
-      { cat: 'Staff', q: 'Are any staff involved in customer relationships in a way that creates key-person risk?' },
-      { cat: 'Legal', q: 'Are all 3 vehicles registered, roadworthy, and free of any finance or encumbrances? Please provide service histories.' },
-      { cat: 'Legal', q: 'Is the Skimmer software licence fully transferable to a new owner with no additional fees?' },
-      { cat: 'Legal', q: 'Are there any pending customer complaints, insurance claims, or WorkCover incidents in the last 3 years?' },
-      { cat: 'Legal', q: 'What are the chemical supply agreements — are we locked into any supplier contracts post-sale?' },
-      { cat: 'Market', q: 'What is the current churn rate — how many accounts were lost and gained in the last 12 months, and why?' },
-      { cat: 'Market', q: 'Is there a waitlist for new customers, and what is current capacity across the 4 technicians?' },
-      { cat: 'Market', q: 'Who are the main local competitors and what differentiates Sunshine Pool Services from them?' }
-    ],
-    valuation: {
-      multipleEbitda: 3.94,
-      fairRange: '$520,000 – $580,000',
-      negotiateTarget: '$565,000',
-      note: 'At $650k the payback period is 4.4 years. A negotiated price of $565k brings this to 3.8 years — much more reasonable. Consider making the offer conditional on Northside Fitness contract renewal confirmation, which also gives you leverage to reduce the price if it cannot be confirmed.'
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.error?.message || `API error ${response.status}`);
     }
-  };
 
-  var biz = buildBiz(readForm(), demoResult);
-  saved = saved.filter(function(x) { return x.name !== 'Sunshine Pool Services'; });
-  saved.unshift(biz);
-  persist();
-  showResults(biz);
-}
+    const json = await response.json();
+    const text = json.content[0].text;
 
-// ---- COMPARE ----
-function renderCompare() {
-  var el = document.getElementById('compareContent');
-  var analysed = saved.filter(function(b) { return b.score > 0; });
-  if (analysed.length < 2) {
-    el.innerHTML = '<div class="empty"><div class="icon">⚖️</div><h3>Need 2+ assessed businesses</h3><p>Assess more businesses to compare them side by side.</p></div>';
-    return;
+    let parsed;
+    try {
+      parsed = JSON.parse(text);
+    } catch(e) {
+      const match = text.match(/\{[\s\S]*\}/);
+      if (match) parsed = JSON.parse(match[0]);
+      else throw new Error('Could not parse Claude response');
+    }
+
+    renderResults(parsed);
+
+  } catch(err) {
+    console.error(err);
+    document.getElementById('loadingPanel').classList.remove('active');
+    document.getElementById('results').style.display = 'block';
+    document.getElementById('resultError').style.display = 'block';
+    document.getElementById('resultErrorMsg').textContent = ' ' + err.message;
   }
-  var cols = analysed.slice(0, 4);
-  var rows = [
-    ['Type', function(b) { return b.type || '—'; }],
-    ['Asking Price', function(b) { return b.askingPrice ? '$' + num(b.askingPrice) : '—'; }],
-    ['Annual Revenue', function(b) { return b.annualRevenue ? '$' + num(b.annualRevenue) : '—'; }],
-    ['Net Profit', function(b) { return b.netProfit ? '$' + num(b.netProfit) : '—'; }],
-    ['Overall Score', function(b) { return '<strong style="font-size:17px;color:' + scoreHex(b.score) + '">' + b.score + '</strong>'; }],
-    ['Recommendation', function(b) { return '<span class="badge ' + recBadgeClass(b.recommendation) + '">' + recLabel(b.recommendation) + '</span>'; }],
-    ['Financial Health', function(b) { return '<span style="font-weight:700;color:' + scoreHex(b.financialScore) + '">' + b.financialScore + '</span>'; }],
-    ['Business Quality', function(b) { return '<span style="font-weight:700;color:' + scoreHex(b.businessScore) + '">' + b.businessScore + '</span>'; }],
-    ['Risk Level', function(b) { return '<span style="font-weight:700;color:' + scoreHex(b.riskScore) + '">' + b.riskScore + '</span>'; }],
-    ['Valuation Fairness', function(b) { return '<span style="font-weight:700;color:' + scoreHex(b.valuationScore) + '">' + b.valuationScore + '</span>'; }],
-    ['Red Flags', function(b) { var n = (b.flags||[]).filter(function(f){return f.type==='red';}).length; return '<span style="color:var(--red);font-weight:700;">' + n + '</span>'; }],
-    ['Fair Value Range', function(b) { return (b.valuation && b.valuation.fairRange) ? b.valuation.fairRange : '—'; }]
-  ];
-  var html = '<div style="overflow-x:auto;"><table class="cmp-table"><thead><tr><th>Metric</th>';
-  cols.forEach(function(b) { html += '<th>' + esc(b.name) + '</th>'; });
-  html += '</tr></thead><tbody>';
-  rows.forEach(function(row, i) {
-    html += '<tr' + (i % 2 === 1 ? ' style="background:rgba(255,255,255,.02)"' : '') + '>';
-    html += '<td>' + row[0] + '</td>';
-    cols.forEach(function(b) { html += '<td>' + row[1](b) + '</td>'; });
-    html += '</tr>';
+}
+
+function renderResults(data) {
+  document.getElementById('loadingPanel').classList.remove('active');
+  document.getElementById('results').style.display = 'block';
+
+  const icons = { PROCEED: '✅', CAUTION: '⚠️', AVOID: '🛑' };
+  const titles = { PROCEED: 'Looks Promising — Proceed Carefully', CAUTION: 'Proceed With Caution', AVOID: 'Not Recommended — Too Many Red Flags' };
+  const classes = { PROCEED: 'proceed', CAUTION: 'caution', AVOID: 'avoid' };
+  const banner = document.getElementById('verdictBanner');
+  banner.className = `verdict-banner ${classes[data.verdict] || 'caution'}`;
+  document.getElementById('verdictIcon').textContent = icons[data.verdict] || '⚠️';
+  document.getElementById('verdictTitle').textContent = titles[data.verdict] || data.verdict;
+  document.getElementById('verdictSummary').textContent = data.verdictSummary || '';
+
+  const scoreLabels = {
+    financial: '💰 Financial Health',
+    operations: '⚙️ Operations',
+    market: '📈 Market & Customers',
+    risk: '🛡️ Risk Level'
+  };
+  const grid = document.getElementById('scoresGrid');
+  grid.innerHTML = '';
+  if (data.scores) {
+    Object.entries(data.scores).forEach(([key, val]) => {
+      const pct = (val.score / 10) * 100;
+      const color = val.score >= 7 ? '#10b981' : val.score >= 4 ? '#f59e0b' : '#ef4444';
+      grid.innerHTML += `<div class="score-card">
+        <div class="score-label">${scoreLabels[key] || key}</div>
+        <div class="score-row">
+          <div class="score-num" style="color:${color}">${val.score}/10</div>
+          <div class="score-bar-bg"><div class="score-bar-fill" style="width:${pct}%;background:${color}"></div></div>
+        </div>
+        <div class="score-comment">${val.comment || ''}</div>
+      </div>`;
+    });
+  }
+
+  if (data.greenFlags?.length) {
+    document.getElementById('greenFlagsCard').style.display = 'block';
+    document.getElementById('greenFlagsList').innerHTML = data.greenFlags.map(f => `<li>${f}</li>`).join('');
+  }
+  if (data.redFlags?.length) {
+    document.getElementById('redFlagsCard').style.display = 'block';
+    document.getElementById('redFlagsList').innerHTML = data.redFlags.map(f => `<li>${f}</li>`).join('');
+  }
+  if (data.questionsToAsk?.length) {
+    document.getElementById('questionsCard').style.display = 'block';
+    document.getElementById('questionsList').innerHTML = data.questionsToAsk.map(q => `<li>${q}</li>`).join('');
+  }
+  if (data.nextSteps?.length) {
+    document.getElementById('nextStepsCard').style.display = 'block';
+    document.getElementById('nextStepsList').innerHTML = data.nextSteps.map(s => `<li style="margin-bottom:6px;font-size:13.5px;line-height:1.6">${s}</li>`).join('');
+  }
+  if (data.fullAnalysis) {
+    document.getElementById('fullAnalysisCard').style.display = 'block';
+    document.getElementById('fullAnalysis').textContent = data.fullAnalysis;
+  }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function restartAssessment() {
+  document.querySelectorAll('textarea, input[type="text"]').forEach(el => el.value = '');
+  document.querySelectorAll('.radio-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+  ['greenFlagsCard','redFlagsCard','questionsCard','nextStepsCard','fullAnalysisCard'].forEach(id => {
+    document.getElementById(id).style.display = 'none';
   });
-  html += '</tbody></table></div>';
-  el.innerHTML = html;
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('resultError').style.display = 'none';
+  document.getElementById('scoresGrid').innerHTML = '';
+  goToStep(0);
 }
-
-// ---- LOADING ----
-function showLoading() {
-  document.getElementById('loadingOverlay').className = 'overlay show';
-  var steps = ['lstep1','lstep2','lstep3','lstep4','lstep5'];
-  steps.forEach(function(s) { document.getElementById(s).className = 'lstep'; });
-  steps.forEach(function(s, i) {
-    setTimeout(function() { document.getElementById(s).className = 'lstep show'; }, i * 900);
-  });
-}
-function hideLoading() {
-  document.getElementById('loadingOverlay').className = 'overlay';
-}
-function showErr(msg) {
-  var e = document.getElementById('errBox');
-  e.textContent = msg;
-  e.className = 'error show';
-}
-
-// ---- HELPERS ----
-function esc(s) {
-  if (!s) return '';
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function num(n) { return Number(n).toLocaleString(); }
-function shortNum(n) { return n >= 1000000 ? (n/1000000).toFixed(1)+'M' : n >= 1000 ? (n/1000).toFixed(0)+'k' : n; }
-function fmtDate(d) { return new Date(d).toLocaleDateString('en-AU', {day:'numeric',month:'short'}); }
-function scoreColor(s) { return s >= 70 ? 'sc-green' : s >= 50 ? 'sc-yellow' : 'sc-red'; }
-function scoreHex(s) { return s >= 70 ? 'var(--green)' : s >= 50 ? 'var(--yellow)' : 'var(--red)'; }
-function var_accent() { return 'var(--accent)'; }
-function var_green() { return 'var(--green)'; }
-function var_yellow() { return 'var(--yellow)'; }
-function var_red() { return 'var(--red)'; }
-function recLabel(r) {
-  var m = {strong_buy:'⭐ Strong Buy', consider:'👀 Consider', caution:'⚠️ Caution', pass:'❌ Pass'};
-  return m[r] || 'Assessed';
-}
-function recBadgeClass(r) {
-  var m = {strong_buy:'bg-green', consider:'bg-yellow', caution:'bg-orange', pass:'bg-red'};
-  return m[r] || 'bg-muted';
-}
-
-// ---- INIT ----
-renderDashboard();
 </script>
+
 </body>
 </html>
