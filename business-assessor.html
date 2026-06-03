@@ -5,6 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Business Acquisition Assessor — Sonal Agarwal</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<!-- PDF.js for PDF text extraction -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<!-- Mammoth.js for Word doc extraction -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+
 <style>
   :root {
     color-scheme: light;
@@ -22,7 +28,6 @@
     min-height: 100vh;
   }
 
-  /* Top nav */
   .topbar {
     background: rgba(250,249,247,0.95);
     backdrop-filter: blur(12px);
@@ -35,12 +40,7 @@
     top: 0;
     z-index: 100;
   }
-  .topbar a {
-    font-size: 13px;
-    color: var(--ink-soft);
-    text-decoration: none;
-    font-weight: 500;
-  }
+  .topbar a { font-size: 13px; color: var(--ink-soft); text-decoration: none; font-weight: 500; }
   .topbar a:hover { color: var(--accent); }
   .topbar-sep { color: #ccc; font-size: 13px; }
   .topbar-title { font-size: 13px; font-weight: 500; color: var(--ink); }
@@ -63,70 +63,42 @@
   .api-panel {
     background: white;
     border-radius: 12px;
-    padding: 28px;
+    padding: 24px 26px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
     margin-bottom: 20px;
     border-left: 4px solid #6366f1;
   }
-  .api-panel h2 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
-  .api-panel p { font-size: 13px; color: #555; line-height: 1.6; margin-bottom: 14px; }
+  .api-panel h2 { font-size: 15px; font-weight: 700; margin-bottom: 7px; }
+  .api-panel p { font-size: 13px; color: #555; line-height: 1.6; margin-bottom: 12px; }
   .api-panel .note { font-size: 12px; color: #94a3b8; margin-top: 8px; line-height: 1.5; }
   .api-input-row { display: flex; gap: 8px; }
   .api-input-row input {
-    flex: 1;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 10px 14px;
-    font-size: 13px;
-    font-family: inherit;
-    background: #fafbfc;
+    flex: 1; border: 1.5px solid #e2e8f0; border-radius: 8px;
+    padding: 10px 14px; font-size: 13px; font-family: inherit; background: #fafbfc;
   }
   .api-input-row input:focus { outline: none; border-color: #6366f1; background: white; }
   .btn-set-key {
-    background: #6366f1;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 18px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    white-space: nowrap;
+    background: #6366f1; color: white; border: none; border-radius: 8px;
+    padding: 10px 18px; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap;
+    font-family: inherit;
   }
   .btn-set-key:hover { background: #4f46e5; }
   .key-set-badge {
-    display: none;
-    align-items: center;
-    gap: 6px;
-    background: #f0fdf4;
-    border: 1px solid #6ee7b7;
-    border-radius: 8px;
-    padding: 8px 14px;
-    font-size: 13px;
-    color: #065f46;
-    font-weight: 500;
-    margin-top: 10px;
+    display: none; align-items: center; gap: 6px;
+    background: #f0fdf4; border: 1px solid #6ee7b7; border-radius: 8px;
+    padding: 8px 14px; font-size: 13px; color: #065f46; font-weight: 500; margin-top: 10px;
   }
   .key-set-badge.visible { display: flex; }
-
-  /* Progress bar */
-  .progress-bar {
-    display: flex;
-    margin-bottom: 24px;
-    background: #e2e8f0;
-    border-radius: 8px;
-    overflow: hidden;
+  .api-error {
+    background: #fef2f2; border: 1px solid #fca5a5; border-radius: 8px;
+    padding: 9px 13px; font-size: 12px; color: #991b1b; margin-top: 8px; display: none;
   }
+
+  /* Progress */
+  .progress-bar { display: flex; margin-bottom: 22px; background: #e2e8f0; border-radius: 8px; overflow: hidden; }
   .progress-step {
-    flex: 1;
-    padding: 9px 8px;
-    font-size: 11px;
-    font-weight: 600;
-    color: #64748b;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    border-right: 1px solid #cbd5e1;
+    flex: 1; padding: 9px 8px; font-size: 11px; font-weight: 600; color: #64748b;
+    text-align: center; cursor: pointer; transition: all 0.2s; border-right: 1px solid #cbd5e1;
   }
   .progress-step:last-child { border-right: none; }
   .progress-step.active { background: #3b82f6; color: white; }
@@ -134,111 +106,109 @@
   .progress-step .step-num { display: block; font-size: 15px; margin-bottom: 1px; }
 
   /* Cards */
-  .card {
-    background: white;
-    border-radius: 12px;
-    padding: 26px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-    margin-bottom: 20px;
-  }
+  .card { background: white; border-radius: 12px; padding: 26px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 20px; }
   .card h2 { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
   .card .subtitle { font-size: 13px; color: #64748b; margin-bottom: 18px; line-height: 1.5; }
 
-  label {
-    display: block;
-    font-size: 13px;
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 6px;
-    margin-top: 16px;
+  label.field-label {
+    display: block; font-size: 13px; font-weight: 600; color: #374151;
+    margin-bottom: 6px; margin-top: 16px;
   }
-  label:first-of-type { margin-top: 0; }
+  label.field-label:first-of-type { margin-top: 0; }
   .label-hint { font-weight: 400; color: #94a3b8; font-size: 12px; }
 
-  textarea {
-    width: 100%;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 12px 14px;
-    font-size: 13px;
-    font-family: inherit;
-    color: #1a1a2e;
+  /* Upload zone */
+  .upload-zone {
+    border: 2px dashed #cbd5e1;
+    border-radius: 10px;
+    padding: 18px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
     background: #fafbfc;
-    resize: vertical;
-    transition: border-color 0.2s;
-    min-height: 100px;
+    margin-bottom: 10px;
+    position: relative;
+  }
+  .upload-zone:hover, .upload-zone.drag-over {
+    border-color: #3b82f6;
+    background: #eff6ff;
+  }
+  .upload-zone input[type="file"] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+  }
+  .upload-zone-icon { font-size: 22px; margin-bottom: 6px; }
+  .upload-zone-text { font-size: 13px; color: #64748b; }
+  .upload-zone-text strong { color: #3b82f6; }
+  .upload-zone-sub { font-size: 11px; color: #94a3b8; margin-top: 3px; }
+
+  /* File chips */
+  .file-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; min-height: 0; }
+  .file-chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px;
+    padding: 4px 10px; font-size: 12px; color: #1d4ed8; font-weight: 500;
+  }
+  .file-chip.loading { background: #f8fafc; border-color: #e2e8f0; color: #64748b; }
+  .file-chip.error { background: #fef2f2; border-color: #fca5a5; color: #991b1b; }
+  .file-chip-remove {
+    cursor: pointer; font-size: 14px; line-height: 1; color: #93c5fd;
+    margin-left: 2px; border: none; background: none; padding: 0; font-family: inherit;
+  }
+  .file-chip-remove:hover { color: #1d4ed8; }
+
+  /* Or divider */
+  .or-divider {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 11px; color: #94a3b8; font-weight: 500; margin: 8px 0;
+    text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .or-divider::before, .or-divider::after {
+    content: ''; flex: 1; height: 1px; background: #e2e8f0;
+  }
+
+  textarea {
+    width: 100%; border: 1.5px solid #e2e8f0; border-radius: 8px;
+    padding: 12px 14px; font-size: 13px; font-family: inherit; color: #1a1a2e;
+    background: #fafbfc; resize: vertical; transition: border-color 0.2s; min-height: 80px;
   }
   textarea:focus { outline: none; border-color: #3b82f6; background: white; }
-  textarea.tall { min-height: 160px; }
 
   input[type="text"] {
-    width: 100%;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 10px 14px;
-    font-size: 13px;
-    font-family: inherit;
-    color: #1a1a2e;
-    background: #fafbfc;
-    transition: border-color 0.2s;
+    width: 100%; border: 1.5px solid #e2e8f0; border-radius: 8px;
+    padding: 10px 14px; font-size: 13px; font-family: inherit; color: #1a1a2e;
+    background: #fafbfc; transition: border-color 0.2s;
   }
   input[type="text"]:focus { outline: none; border-color: #3b82f6; background: white; }
 
   .radio-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
   .radio-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 13px;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 13px;
-    color: #374151;
-    transition: all 0.15s;
-    background: #fafbfc;
-    user-select: none;
+    display: flex; align-items: center; gap: 6px; padding: 8px 13px;
+    border: 1.5px solid #e2e8f0; border-radius: 8px; cursor: pointer;
+    font-size: 13px; color: #374151; transition: all 0.15s; background: #fafbfc; user-select: none;
   }
   .radio-btn:hover { border-color: #3b82f6; }
   .radio-btn.selected { border-color: #3b82f6; background: #eff6ff; color: #1d4ed8; font-weight: 600; }
   .radio-btn input { display: none; }
 
   .tip-box {
-    background: #eff6ff;
-    border: 1px solid #bfdbfe;
-    border-radius: 8px;
-    padding: 12px 14px;
-    font-size: 12px;
-    color: #1d4ed8;
-    margin-top: 18px;
-    line-height: 1.6;
+    background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px;
+    padding: 12px 14px; font-size: 12px; color: #1d4ed8; margin-top: 18px; line-height: 1.6;
   }
   .tip-box strong { display: block; margin-bottom: 3px; }
 
   .step-intro {
     background: linear-gradient(135deg, #f0f4ff, #e8f0ff);
-    border: 1px solid #c7d7ff;
-    border-radius: 10px;
-    padding: 14px 16px;
-    margin-bottom: 20px;
-    font-size: 13px;
-    color: #3730a3;
-    line-height: 1.6;
+    border: 1px solid #c7d7ff; border-radius: 10px;
+    padding: 13px 15px; margin-bottom: 18px; font-size: 13px; color: #3730a3; line-height: 1.6;
   }
 
-  .field-group { margin-top: 16px; }
+  .field-group { margin-top: 18px; }
 
   /* Buttons */
   .btn-row { display: flex; gap: 10px; margin-top: 22px; justify-content: flex-end; }
   .btn {
-    padding: 10px 22px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    border: none;
-    transition: all 0.15s;
-    font-family: inherit;
+    padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 600;
+    cursor: pointer; border: none; transition: all 0.15s; font-family: inherit;
   }
   .btn-primary { background: #3b82f6; color: white; }
   .btn-primary:hover { background: #2563eb; }
@@ -246,9 +216,7 @@
   .btn-secondary:hover { background: #e2e8f0; }
   .btn-analyze {
     background: linear-gradient(135deg, #6366f1, #3b82f6);
-    color: white;
-    padding: 12px 28px;
-    font-size: 15px;
+    color: white; padding: 12px 28px; font-size: 15px;
   }
   .btn-analyze:hover { opacity: 0.9; transform: translateY(-1px); }
   .btn-restart { background: #f1f5f9; color: #374151; }
@@ -261,12 +229,8 @@
   .analyzing-overlay { display: none; text-align: center; padding: 56px 20px; }
   .analyzing-overlay.active { display: block; }
   .spinner {
-    width: 48px; height: 48px;
-    border: 4px solid #e2e8f0;
-    border-top-color: #3b82f6;
-    border-radius: 50%;
-    animation: spin 0.9s linear infinite;
-    margin: 0 auto 20px;
+    width: 48px; height: 48px; border: 4px solid #e2e8f0; border-top-color: #3b82f6;
+    border-radius: 50%; animation: spin 0.9s linear infinite; margin: 0 auto 20px;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
   .analyzing-overlay h3 { font-size: 18px; margin-bottom: 8px; }
@@ -274,14 +238,9 @@
 
   /* Results */
   #results { display: none; }
-
   .verdict-banner {
-    border-radius: 12px;
-    padding: 22px 26px;
-    margin-bottom: 18px;
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
+    border-radius: 12px; padding: 22px 26px; margin-bottom: 18px;
+    display: flex; align-items: flex-start; gap: 16px;
   }
   .verdict-banner.proceed { background: linear-gradient(135deg, #d1fae5, #a7f3d0); border: 1.5px solid #6ee7b7; }
   .verdict-banner.caution { background: linear-gradient(135deg, #fef3c7, #fde68a); border: 1.5px solid #fcd34d; }
@@ -292,13 +251,7 @@
 
   .scores-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; }
   @media (max-width: 580px) { .scores-grid { grid-template-columns: 1fr; } }
-
-  .score-card {
-    background: white;
-    border-radius: 10px;
-    padding: 14px 16px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.07);
-  }
+  .score-card { background: white; border-radius: 10px; padding: 14px 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); }
   .score-label { font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
   .score-row { display: flex; align-items: center; gap: 10px; }
   .score-num { font-size: 22px; font-weight: 800; min-width: 42px; }
@@ -306,13 +259,7 @@
   .score-bar-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
   .score-comment { font-size: 12px; color: #64748b; margin-top: 5px; }
 
-  .section-card {
-    background: white;
-    border-radius: 12px;
-    padding: 20px 22px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.07);
-    margin-bottom: 14px;
-  }
+  .section-card { background: white; border-radius: 12px; padding: 20px 22px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); margin-bottom: 14px; }
   .section-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 12px; }
   .section-card ul { padding-left: 18px; }
   .section-card li { font-size: 13.5px; line-height: 1.7; color: #374151; margin-bottom: 4px; }
@@ -323,23 +270,15 @@
   .red-flags li { padding: 9px 13px; border-left: 3px solid #ef4444; background: #fef2f2; border-radius: 0 6px 6px 0; font-size: 13.5px; margin-bottom: 7px; }
   .green-flags li { padding: 9px 13px; border-left: 3px solid #10b981; background: #f0fdf4; border-radius: 0 6px 6px 0; font-size: 13.5px; margin-bottom: 7px; }
 
-  .error-box {
-    background: #fef2f2;
-    border: 1.5px solid #fca5a5;
-    border-radius: 10px;
-    padding: 16px 18px;
-    font-size: 13px;
-    color: #991b1b;
-    margin-top: 16px;
-    display: none;
-    line-height: 1.6;
+  .result-error {
+    background: #fef2f2; border: 1.5px solid #fca5a5; border-radius: 10px;
+    padding: 14px 16px; font-size: 13px; color: #991b1b; margin-top: 16px; display: none; line-height: 1.6;
   }
-  .error-box strong { display: block; margin-bottom: 4px; }
+  .result-error strong { display: block; margin-bottom: 3px; }
 </style>
 </head>
 <body>
 
-<!-- Nav breadcrumb -->
 <div class="topbar">
   <a href="index.html">← Sonal Agarwal</a>
   <span class="topbar-sep">/</span>
@@ -356,23 +295,20 @@
 
 <div class="container">
 
-  <!-- API Key Panel -->
-  <div class="api-panel" id="apiPanel">
+  <!-- API Key -->
+  <div class="api-panel">
     <h2>🔑 Enter your Anthropic API key to get started</h2>
-    <p>This tool uses Claude AI to analyse the business. You'll need an Anthropic API key — it's free to create one at <a href="https://console.anthropic.com" target="_blank" style="color:#6366f1">console.anthropic.com</a>.</p>
+    <p>This tool uses Claude AI. You need a free Anthropic API key from <a href="https://console.anthropic.com" target="_blank" style="color:#6366f1">console.anthropic.com</a>.</p>
     <div class="api-input-row">
       <input type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." autocomplete="off">
       <button class="btn-set-key" onclick="setApiKey()">Save Key</button>
     </div>
     <div class="key-set-badge" id="keyBadge">✅ API key saved — ready to go!</div>
-    <p class="note">🔒 Your key is stored only in your browser memory for this session. It is never sent anywhere except directly to Anthropic's API.</p>
-    <div class="error-box" id="apiError">
-      <strong>Invalid or missing API key.</strong>
-      Please enter a valid Anthropic API key starting with <code>sk-ant-</code>.
-    </div>
+    <div class="api-error" id="apiError">Please enter a valid Anthropic API key (starts with sk-ant-).</div>
+    <p class="note">🔒 Your key stays in your browser only. It's sent directly to Anthropic's API — never stored elsewhere.</p>
   </div>
 
-  <!-- Progress -->
+  <!-- Progress bar -->
   <div class="progress-bar">
     <div class="progress-step active" id="ps-0" onclick="goToStep(0)"><span class="step-num">1</span>Business</div>
     <div class="progress-step" id="ps-1" onclick="goToStep(1)"><span class="step-num">2</span>Financials</div>
@@ -381,28 +317,60 @@
     <div class="progress-step" id="ps-4" onclick="goToStep(4)"><span class="step-num">5</span>Assessment</div>
   </div>
 
-  <!-- STEP 1: Business Info -->
+  <!-- ── STEP 1: Business Info ── -->
   <div class="step-panel active" id="step-0">
     <div class="card">
       <h2>Tell me about the business</h2>
-      <p class="subtitle">Paste in anything the agent or seller has sent you — the listing, brochure, job ads, emails, anything. The more detail, the better the assessment.</p>
+      <p class="subtitle">Upload files or paste text — or both. The more you share, the better the assessment.</p>
+
       <div class="step-intro">
-        💡 <strong>Don't worry if you don't have everything.</strong> Paste whatever you have. Even a basic description helps — we'll flag what's missing.
+        💡 <strong>Don't worry if you don't have everything.</strong> Even a basic listing description gives us a lot to work with. We'll flag what's missing.
       </div>
+
+      <!-- Listing upload -->
       <div class="field-group">
-        <label>Business listing / agent description <span class="label-hint">(paste the main description here)</span></label>
-        <textarea class="tall" id="listing" placeholder="e.g. 'For sale: well-established cafe in Melbourne CBD. Asking $350,000. Turnover $800k/year. Owner retiring after 15 years...'"></textarea>
+        <label class="field-label">Business listing / agent description <span class="label-hint">(the main sales document)</span></label>
+        <div class="file-chips" id="chips-listing"></div>
+        <div class="upload-zone" id="zone-listing" ondragover="handleDragOver(event,'zone-listing')" ondragleave="handleDragLeave('zone-listing')" ondrop="handleDrop(event,'listing')">
+          <input type="file" accept=".pdf,.docx,.txt,.doc" multiple onchange="handleFiles(this.files,'listing')">
+          <div class="upload-zone-icon">📄</div>
+          <div class="upload-zone-text"><strong>Click to upload</strong> or drag & drop</div>
+          <div class="upload-zone-sub">PDF, Word (.docx), or Text (.txt)</div>
+        </div>
+        <div class="or-divider">or paste text below</div>
+        <textarea id="listing" placeholder="e.g. 'For sale: well-established cafe in Melbourne CBD. Asking $350,000. Turnover $800k/year. Owner retiring after 15 years...'"></textarea>
       </div>
+
+      <!-- Job ads upload -->
       <div class="field-group">
-        <label>Job advertisements <span class="label-hint">(paste any job ads here — they reveal a lot)</span></label>
-        <textarea id="jobAds" placeholder="Job ads show what roles exist, who they're hiring, and how the business describes itself internally..."></textarea>
+        <label class="field-label">Job advertisements <span class="label-hint">(job ads reveal staffing, roles, and how the biz presents itself)</span></label>
+        <div class="file-chips" id="chips-jobads"></div>
+        <div class="upload-zone" id="zone-jobads" ondragover="handleDragOver(event,'zone-jobads')" ondragleave="handleDragLeave('zone-jobads')" ondrop="handleDrop(event,'jobads')">
+          <input type="file" accept=".pdf,.docx,.txt,.doc" multiple onchange="handleFiles(this.files,'jobads')">
+          <div class="upload-zone-icon">💼</div>
+          <div class="upload-zone-text"><strong>Click to upload</strong> job ads</div>
+          <div class="upload-zone-sub">PDF, Word (.docx), or Text (.txt)</div>
+        </div>
+        <div class="or-divider">or paste text below</div>
+        <textarea id="jobAds" placeholder="Paste job ad text here..."></textarea>
       </div>
+
+      <!-- Other docs upload -->
       <div class="field-group">
-        <label>Any other documents or info <span class="label-hint">(emails from agent, brochures, inspection notes)</span></label>
-        <textarea id="otherDocs" placeholder="Anything else you've received or noted..."></textarea>
+        <label class="field-label">Other documents <span class="label-hint">(emails from agent, brochures, inspection notes, anything else)</span></label>
+        <div class="file-chips" id="chips-other"></div>
+        <div class="upload-zone" id="zone-other" ondragover="handleDragOver(event,'zone-other')" ondragleave="handleDragLeave('zone-other')" ondrop="handleDrop(event,'other')">
+          <input type="file" accept=".pdf,.docx,.txt,.doc" multiple onchange="handleFiles(this.files,'other')">
+          <div class="upload-zone-icon">📎</div>
+          <div class="upload-zone-text"><strong>Click to upload</strong> any other files</div>
+          <div class="upload-zone-sub">PDF, Word (.docx), or Text (.txt)</div>
+        </div>
+        <div class="or-divider">or paste text below</div>
+        <textarea id="otherDocs" placeholder="Anything else — emails, notes, inspection feedback..."></textarea>
       </div>
+
       <div class="field-group">
-        <label>Type of business</label>
+        <label class="field-label">Type of business</label>
         <div class="radio-group">
           <label class="radio-btn"><input type="radio" name="bizType" value="cafe/restaurant"> ☕ Cafe / Restaurant</label>
           <label class="radio-btn"><input type="radio" name="bizType" value="retail"> 🛍️ Retail Shop</label>
@@ -413,43 +381,64 @@
           <label class="radio-btn"><input type="radio" name="bizType" value="other"> 📦 Other</label>
         </div>
       </div>
+
       <div class="field-group">
-        <label>Asking price (if known)</label>
+        <label class="field-label">Asking price (if known)</label>
         <input type="text" id="askingPrice" placeholder="e.g. $350,000 or 'not listed'">
       </div>
+
       <div class="btn-row">
         <button class="btn btn-primary" onclick="nextStep()">Next: Financials →</button>
       </div>
     </div>
   </div>
 
-  <!-- STEP 2: Financials -->
+  <!-- ── STEP 2: Financials ── -->
   <div class="step-panel" id="step-1">
     <div class="card">
       <h2>💰 Financial information</h2>
-      <p class="subtitle">The most important step. Answer what you can — skip anything you don't have yet.</p>
+      <p class="subtitle">Upload financial documents or fill in what you know. Skip anything you don't have yet.</p>
+
       <div class="step-intro">
-        💡 <strong>Turnover vs profit?</strong> Turnover = total money coming IN. Profit = what's left after paying all bills. Both matter a lot.
+        💡 <strong>Turnover vs profit?</strong> Turnover = total money coming IN each year. Profit = what's left after paying all bills. Both matter.
       </div>
+
+      <!-- Financial docs upload -->
       <div class="field-group">
-        <label>Annual turnover / revenue <span class="label-hint">(total sales per year)</span></label>
-        <input type="text" id="turnover" placeholder="e.g. $800,000 or 'not provided'">
+        <label class="field-label">Financial documents <span class="label-hint">(P&L, tax returns, balance sheets — upload here)</span></label>
+        <div class="file-chips" id="chips-financial"></div>
+        <div class="upload-zone" id="zone-financial" ondragover="handleDragOver(event,'zone-financial')" ondragleave="handleDragLeave('zone-financial')" ondrop="handleDrop(event,'financial')">
+          <input type="file" accept=".pdf,.docx,.txt,.doc" multiple onchange="handleFiles(this.files,'financial')">
+          <div class="upload-zone-icon">📊</div>
+          <div class="upload-zone-text"><strong>Upload financial statements</strong></div>
+          <div class="upload-zone-sub">P&L, tax returns, balance sheets — PDF, Word, or Text</div>
+        </div>
+        <div class="or-divider">or paste / type numbers below</div>
+        <textarea id="financialDetails" placeholder="e.g. 'FY2023 revenue $820k, FY2024 $750k, net profit $95k. Rent $4,500/month. 3 staff on payroll...'"></textarea>
       </div>
+
       <div class="field-group">
-        <label>Annual profit / net income <span class="label-hint">(what the owner takes home)</span></label>
+        <label class="field-label">Annual turnover / revenue <span class="label-hint">(total sales per year, if stated separately)</span></label>
+        <input type="text" id="turnover" placeholder="e.g. $800,000 or 'see uploaded doc'">
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Annual profit / net income <span class="label-hint">(what the owner takes home)</span></label>
         <input type="text" id="profit" placeholder="e.g. $120,000 or 'not provided'">
       </div>
+
       <div class="field-group">
-        <label>Have you seen any financial statements? <span class="label-hint">(tax returns, P&L, balance sheet)</span></label>
+        <label class="field-label">Have you seen financial statements?</label>
         <div class="radio-group">
           <label class="radio-btn"><input type="radio" name="financials" value="yes_verified"> ✅ Yes, accountant verified</label>
-          <label class="radio-btn"><input type="radio" name="financials" value="yes_not_verified"> 📄 Yes, but not verified</label>
+          <label class="radio-btn"><input type="radio" name="financials" value="yes_not_verified"> 📄 Yes, not verified</label>
           <label class="radio-btn"><input type="radio" name="financials" value="no"> ❌ Not yet</label>
-          <label class="radio-btn"><input type="radio" name="financials" value="refused"> 🚫 Owner refused to share</label>
+          <label class="radio-btn"><input type="radio" name="financials" value="refused"> 🚫 Owner refused</label>
         </div>
       </div>
+
       <div class="field-group">
-        <label>How long has the business been operating?</label>
+        <label class="field-label">How long has the business been operating?</label>
         <div class="radio-group">
           <label class="radio-btn"><input type="radio" name="yearsOp" value="under1"> Under 1 year</label>
           <label class="radio-btn"><input type="radio" name="yearsOp" value="1to3"> 1–3 years</label>
@@ -458,19 +447,21 @@
           <label class="radio-btn"><input type="radio" name="yearsOp" value="unknown"> Don't know</label>
         </div>
       </div>
+
       <div class="field-group">
-        <label>Why is the owner selling?</label>
+        <label class="field-label">Why is the owner selling?</label>
         <div class="radio-group">
           <label class="radio-btn"><input type="radio" name="whySelling" value="retiring"> 👴 Retiring</label>
           <label class="radio-btn"><input type="radio" name="whySelling" value="moving"> 🌏 Relocating</label>
           <label class="radio-btn"><input type="radio" name="whySelling" value="other_business"> 💼 Other opportunity</label>
           <label class="radio-btn"><input type="radio" name="whySelling" value="health"> 🏥 Health reasons</label>
-          <label class="radio-btn"><input type="radio" name="whySelling" value="not_profitable"> 📉 Business not performing</label>
+          <label class="radio-btn"><input type="radio" name="whySelling" value="not_profitable"> 📉 Not performing</label>
           <label class="radio-btn"><input type="radio" name="whySelling" value="not_stated"> ❓ Not stated</label>
         </div>
       </div>
+
       <div class="field-group">
-        <label>Known debts, loans, or liabilities?</label>
+        <label class="field-label">Known debts or liabilities?</label>
         <div class="radio-group">
           <label class="radio-btn"><input type="radio" name="debts" value="none_stated"> None mentioned</label>
           <label class="radio-btn"><input type="radio" name="debts" value="some"> Some mentioned</label>
@@ -478,10 +469,7 @@
           <label class="radio-btn"><input type="radio" name="debts" value="unknown"> Don't know</label>
         </div>
       </div>
-      <div class="field-group">
-        <label>Additional financial details <span class="label-hint">(paste any numbers or financial statements here)</span></label>
-        <textarea id="financialDetails" placeholder="e.g. 'FY2023 revenue $820k, FY2024 $750k, net profit $95k. Rent $4,500/month. 3 staff on payroll...'"></textarea>
-      </div>
+
       <div class="btn-row">
         <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
         <button class="btn btn-primary" onclick="nextStep()">Next: Staff & Ops →</button>
@@ -489,16 +477,17 @@
     </div>
   </div>
 
-  <!-- STEP 3: Staff & Operations -->
+  <!-- ── STEP 3: Staff & Ops ── -->
   <div class="step-panel" id="step-2">
     <div class="card">
       <h2>👥 Staff & how it runs</h2>
       <p class="subtitle">Understanding day-to-day operations is crucial before buying.</p>
       <div class="step-intro">
-        💡 <strong>Key person risk:</strong> If the business only works because of one person (often the owner), that's a major red flag. You need it to run without them.
+        💡 <strong>Key person risk:</strong> If the business only works because of one person — usually the owner — that's a major red flag. You need it to function without them.
       </div>
+
       <div class="field-group">
-        <label>How many staff does it have?</label>
+        <label class="field-label">How many staff does it have?</label>
         <div class="radio-group">
           <label class="radio-btn"><input type="radio" name="staffCount" value="just_owner"> Just the owner</label>
           <label class="radio-btn"><input type="radio" name="staffCount" value="1to3"> 1–3 staff</label>
@@ -507,8 +496,9 @@
           <label class="radio-btn"><input type="radio" name="staffCount" value="unknown"> Don't know</label>
         </div>
       </div>
+
       <div class="field-group">
-        <label>Can it run without the current owner?</label>
+        <label class="field-label">Can it run without the current owner?</label>
         <div class="radio-group">
           <label class="radio-btn"><input type="radio" name="ownerDep" value="yes"> ✅ Yes, managers in place</label>
           <label class="radio-btn"><input type="radio" name="ownerDep" value="partially"> ⚠️ Partially</label>
@@ -516,8 +506,9 @@
           <label class="radio-btn"><input type="radio" name="ownerDep" value="unknown"> Don't know</label>
         </div>
       </div>
+
       <div class="field-group">
-        <label>Lease situation?</label>
+        <label class="field-label">Lease situation?</label>
         <div class="radio-group">
           <label class="radio-btn"><input type="radio" name="lease" value="yes_long"> ✅ Long lease (3+ years)</label>
           <label class="radio-btn"><input type="radio" name="lease" value="yes_short"> ⚠️ Short lease (under 2 years)</label>
@@ -526,8 +517,9 @@
           <label class="radio-btn"><input type="radio" name="lease" value="unknown"> Don't know</label>
         </div>
       </div>
+
       <div class="field-group">
-        <label>Customer base?</label>
+        <label class="field-label">Customer base?</label>
         <div class="radio-group">
           <label class="radio-btn"><input type="radio" name="customers" value="repeat_loyal"> 🔄 Loyal repeat customers</label>
           <label class="radio-btn"><input type="radio" name="customers" value="mixed"> 🔀 Mix of regulars and new</label>
@@ -536,8 +528,9 @@
           <label class="radio-btn"><input type="radio" name="customers" value="unknown"> Don't know</label>
         </div>
       </div>
+
       <div class="field-group">
-        <label>Major contracts or supplier agreements?</label>
+        <label class="field-label">Major contracts or supplier agreements?</label>
         <div class="radio-group">
           <label class="radio-btn"><input type="radio" name="contracts" value="yes_transferable"> ✅ Yes, transfer to new owner</label>
           <label class="radio-btn"><input type="radio" name="contracts" value="yes_unclear"> ⚠️ Yes, transfer unclear</label>
@@ -545,10 +538,12 @@
           <label class="radio-btn"><input type="radio" name="contracts" value="unknown"> Don't know</label>
         </div>
       </div>
+
       <div class="field-group">
-        <label>Other staff or operations details?</label>
+        <label class="field-label">Other staff or operations details?</label>
         <textarea id="opsDetails" placeholder="e.g. 'Long-term manager who would stay. Equipment is aging. Seasonal — busiest Oct–March...'"></textarea>
       </div>
+
       <div class="btn-row">
         <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
         <button class="btn btn-primary" onclick="nextStep()">Next: About You →</button>
@@ -556,29 +551,32 @@
     </div>
   </div>
 
-  <!-- STEP 4: Buyer -->
+  <!-- ── STEP 4: About you ── -->
   <div class="step-panel" id="step-3">
     <div class="card">
       <h2>🙋 About you</h2>
       <p class="subtitle">This helps tailor the assessment to your situation as the buyer.</p>
+
       <div class="field-group">
-        <label>Have you run a business before?</label>
+        <label class="field-label">Have you run a business before?</label>
         <div class="radio-group">
           <label class="radio-btn"><input type="radio" name="experience" value="never"> First time</label>
           <label class="radio-btn"><input type="radio" name="experience" value="some"> Some experience</label>
           <label class="radio-btn"><input type="radio" name="experience" value="yes"> Yes, experienced</label>
         </div>
       </div>
+
       <div class="field-group">
-        <label>Industry experience in this type of business?</label>
+        <label class="field-label">Industry experience in this type of business?</label>
         <div class="radio-group">
           <label class="radio-btn"><input type="radio" name="industryExp" value="yes"> ✅ Yes, I know this industry</label>
           <label class="radio-btn"><input type="radio" name="industryExp" value="some"> Somewhat familiar</label>
           <label class="radio-btn"><input type="radio" name="industryExp" value="no"> ❌ Brand new to me</label>
         </div>
       </div>
+
       <div class="field-group">
-        <label>How are you funding this?</label>
+        <label class="field-label">How are you funding this?</label>
         <div class="radio-group">
           <label class="radio-btn"><input type="radio" name="funding" value="cash"> 💵 Cash / savings</label>
           <label class="radio-btn"><input type="radio" name="funding" value="loan"> 🏦 Bank loan</label>
@@ -586,8 +584,9 @@
           <label class="radio-btn"><input type="radio" name="funding" value="unsure"> Not sure yet</label>
         </div>
       </div>
+
       <div class="field-group">
-        <label>Have you consulted a professional?</label>
+        <label class="field-label">Have you consulted a professional?</label>
         <div class="radio-group">
           <label class="radio-btn"><input type="radio" name="professionals" value="accountant"> 🧮 Accountant</label>
           <label class="radio-btn"><input type="radio" name="professionals" value="lawyer"> ⚖️ Lawyer</label>
@@ -595,14 +594,17 @@
           <label class="radio-btn"><input type="radio" name="professionals" value="none"> Not yet</label>
         </div>
       </div>
+
       <div class="field-group">
-        <label>What's your biggest concern about buying this business?</label>
+        <label class="field-label">What's your biggest concern about buying this business?</label>
         <textarea id="concerns" placeholder="What's worrying you or what are you unsure about?"></textarea>
       </div>
+
       <div class="tip-box">
         <strong>⚠️ Important</strong>
-        This tool gives you a starting point — not legal or financial advice. Always get an accountant to verify the financials and a lawyer to review contracts before signing anything.
+        This tool gives you a starting point — not legal or financial advice. Always get an accountant to verify financials and a lawyer to review contracts before signing anything.
       </div>
+
       <div class="btn-row">
         <button class="btn btn-secondary" onclick="prevStep()">← Back</button>
         <button class="btn btn-analyze" onclick="runAnalysis()">🔍 Generate My Assessment</button>
@@ -610,13 +612,13 @@
     </div>
   </div>
 
-  <!-- STEP 5: Results -->
+  <!-- ── STEP 5: Results ── -->
   <div class="step-panel" id="step-4">
 
     <div class="analyzing-overlay active" id="loadingPanel">
       <div class="spinner"></div>
       <h3>Analysing the business...</h3>
-      <p>Reviewing everything you've shared and assessing key risk areas...</p>
+      <p>Reading your documents and assessing all key risk areas...</p>
     </div>
 
     <div id="results">
@@ -638,7 +640,7 @@
       </div>
       <div id="questionsCard" class="section-card" style="display:none">
         <h3>❓ Questions to ask before proceeding</h3>
-        <p style="font-size:13px;color:#64748b;margin-bottom:10px;">Get answers to these before making any decision:</p>
+        <p style="font-size:13px;color:#64748b;margin-bottom:10px;">Get answers to all of these before making any decision:</p>
         <ul class="questions-list" id="questionsList"></ul>
       </div>
       <div id="nextStepsCard" class="section-card" style="display:none">
@@ -649,29 +651,32 @@
         <h3>📝 Full analysis</h3>
         <p id="fullAnalysis" style="white-space:pre-line;"></p>
       </div>
-      <div class="error-box" id="resultError">
+      <div class="result-error" id="resultError">
         <strong>Something went wrong.</strong>
-        <span id="resultErrorMsg"></span> Please check your API key and try again.
+        <span id="resultErrorMsg"></span>
       </div>
       <div class="btn-row" style="margin-top:20px">
         <button class="btn btn-restart" onclick="restartAssessment()">↩ Start new assessment</button>
       </div>
     </div>
-
   </div>
 
 </div>
 
 <script>
-let apiKey = '';
-let currentStep = 0;
+// ── Config ──────────────────────────────────────────────
+if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc =
+  'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-// API key
+// Extracted text per section (from uploads)
+const extracted = { listing: '', jobads: '', other: '', financial: '' };
+
+// ── API Key ──────────────────────────────────────────────
+let apiKey = '';
 function setApiKey() {
   const val = document.getElementById('apiKeyInput').value.trim();
   if (!val.startsWith('sk-ant-') && !val.startsWith('sk-')) {
-    document.getElementById('apiError').style.display = 'block';
-    return;
+    document.getElementById('apiError').style.display = 'block'; return;
   }
   apiKey = val;
   document.getElementById('apiError').style.display = 'none';
@@ -679,28 +684,126 @@ function setApiKey() {
   document.getElementById('apiKeyInput').value = '•'.repeat(20);
 }
 
-// Radio buttons
-document.addEventListener('click', function(e) {
-  const btn = e.target.closest('.radio-btn');
-  if (!btn) return;
-  const group = btn.parentElement;
-  group.querySelectorAll('.radio-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  const inp = btn.querySelector('input');
-  if (inp) inp.checked = true;
-});
+// ── Drag & drop helpers ──────────────────────────────────
+function handleDragOver(e, zoneId) {
+  e.preventDefault();
+  document.getElementById(zoneId).classList.add('drag-over');
+}
+function handleDragLeave(zoneId) {
+  document.getElementById(zoneId).classList.remove('drag-over');
+}
+function handleDrop(e, section) {
+  e.preventDefault();
+  const zoneId = 'zone-' + section;
+  document.getElementById(zoneId).classList.remove('drag-over');
+  handleFiles(e.dataTransfer.files, section);
+}
 
+// ── File processing ──────────────────────────────────────
+async function handleFiles(files, section) {
+  for (const file of files) {
+    const chipId = 'chip-' + Math.random().toString(36).slice(2);
+    addChip(section, file.name, chipId, 'loading');
+    try {
+      const text = await extractText(file);
+      extracted[section] += '\n\n--- ' + file.name + ' ---\n' + text;
+      updateChip(chipId, file.name, 'done');
+      // Also append to the textarea so user can see / edit
+      const taMap = { listing: 'listing', jobads: 'jobAds', other: 'otherDocs', financial: 'financialDetails' };
+      const ta = document.getElementById(taMap[section]);
+      if (ta) {
+        if (ta.value && !ta.value.endsWith('\n')) ta.value += '\n';
+        ta.value += '\n[From ' + file.name + ']\n' + text.slice(0, 1200) + (text.length > 1200 ? '\n...(truncated in preview)' : '');
+      }
+    } catch(err) {
+      updateChip(chipId, file.name, 'error', err.message);
+    }
+  }
+}
+
+async function extractText(file) {
+  const ext = file.name.split('.').pop().toLowerCase();
+  if (ext === 'txt' || ext === 'md') {
+    return await readAsText(file);
+  } else if (ext === 'pdf') {
+    return await extractPDF(file);
+  } else if (ext === 'docx' || ext === 'doc') {
+    return await extractDOCX(file);
+  } else {
+    throw new Error('Unsupported file type');
+  }
+}
+
+function readAsText(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = e => res(e.target.result);
+    r.onerror = () => rej(new Error('Could not read file'));
+    r.readAsText(file);
+  });
+}
+
+async function extractPDF(file) {
+  if (!window.pdfjsLib) throw new Error('PDF library not loaded');
+  const arrayBuffer = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  let fullText = '';
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    fullText += content.items.map(item => item.str).join(' ') + '\n';
+  }
+  return fullText.trim() || '(No text could be extracted from this PDF)';
+}
+
+async function extractDOCX(file) {
+  if (!window.mammoth) throw new Error('Word library not loaded');
+  const arrayBuffer = await file.arrayBuffer();
+  const result = await mammoth.extractRawText({ arrayBuffer });
+  return result.value.trim() || '(No text could be extracted from this Word doc)';
+}
+
+// ── Chip helpers ─────────────────────────────────────────
+function addChip(section, name, id, state) {
+  const container = document.getElementById('chips-' + section);
+  const chip = document.createElement('span');
+  chip.className = 'file-chip ' + (state === 'loading' ? 'loading' : '');
+  chip.id = id;
+  chip.innerHTML = (state === 'loading' ? '⏳ ' : '') + truncate(name, 28) +
+    ' <button class="file-chip-remove" onclick="removeChip(\'' + id + '\',\'' + section + '\')">×</button>';
+  container.appendChild(chip);
+}
+
+function updateChip(id, name, state, errMsg) {
+  const chip = document.getElementById(id);
+  if (!chip) return;
+  chip.className = 'file-chip' + (state === 'error' ? ' error' : '');
+  chip.innerHTML = (state === 'error' ? '❌ ' : '📄 ') + truncate(name, 28) +
+    (state === 'error' ? ' (' + errMsg + ')' : '') +
+    ' <button class="file-chip-remove" onclick="removeChip(\'' + id + '\',\'' + chip.closest(\'[id^="chips-"]\').id.replace(\'chips-\',\'\') + '\')">×</button>';
+}
+
+function removeChip(chipId, section) {
+  const chip = document.getElementById(chipId);
+  if (chip) chip.remove();
+  // Note: we don't try to un-extract; user can manually clear textarea if needed
+}
+
+function truncate(str, n) { return str.length > n ? str.slice(0, n) + '…' : str; }
+
+// ── Navigation ───────────────────────────────────────────
+let currentStep = 0;
 function nextStep() { if (currentStep < 4) goToStep(currentStep + 1); }
 function prevStep() { if (currentStep > 0) goToStep(currentStep - 1); }
 
 function goToStep(n) {
-  document.getElementById(`step-${currentStep}`).classList.remove('active');
-  document.getElementById(`ps-${currentStep}`).classList.remove('active');
-  if (n > currentStep) document.getElementById(`ps-${currentStep}`).classList.add('done');
+  document.getElementById('step-' + currentStep).classList.remove('active');
+  document.getElementById('ps-' + currentStep).classList.remove('active');
+  if (n > currentStep) document.getElementById('ps-' + currentStep).classList.add('done');
   currentStep = n;
-  document.getElementById(`step-${currentStep}`).classList.add('active');
+  document.getElementById('step-' + currentStep).classList.add('active');
   for (let i = 0; i <= 4; i++) {
-    const ps = document.getElementById(`ps-${i}`);
+    const ps = document.getElementById('ps-' + i);
     ps.classList.remove('active', 'done');
     if (i < currentStep) ps.classList.add('done');
     else if (i === currentStep) ps.classList.add('active');
@@ -708,87 +811,107 @@ function goToStep(n) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+// ── Radio buttons ────────────────────────────────────────
+document.addEventListener('click', function(e) {
+  const btn = e.target.closest('.radio-btn');
+  if (!btn) return;
+  btn.parentElement.querySelectorAll('.radio-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  const inp = btn.querySelector('input');
+  if (inp) inp.checked = true;
+});
+
+// ── Data collection ──────────────────────────────────────
 function getRadioValue(name) {
-  const el = document.querySelector(`input[name="${name}"]:checked`);
+  const el = document.querySelector('input[name="' + name + '"]:checked');
   return el ? el.value : 'not answered';
 }
 
 function collectData() {
+  // Combine textarea text + extracted text
+  const combine = (taId, sec) => {
+    const ta = (document.getElementById(taId) || {}).value || '';
+    return ta; // textarea already has extracted text appended
+  };
   return {
-    listing: document.getElementById('listing').value,
-    jobAds: document.getElementById('jobAds').value,
-    otherDocs: document.getElementById('otherDocs').value,
-    bizType: getRadioValue('bizType'),
-    askingPrice: document.getElementById('askingPrice').value,
-    turnover: document.getElementById('turnover').value,
-    profit: document.getElementById('profit').value,
-    financials: getRadioValue('financials'),
-    yearsOp: getRadioValue('yearsOp'),
-    whySelling: getRadioValue('whySelling'),
-    debts: getRadioValue('debts'),
-    financialDetails: document.getElementById('financialDetails').value,
-    staffCount: getRadioValue('staffCount'),
-    ownerDep: getRadioValue('ownerDep'),
-    lease: getRadioValue('lease'),
-    customers: getRadioValue('customers'),
-    contracts: getRadioValue('contracts'),
-    opsDetails: document.getElementById('opsDetails').value,
-    experience: getRadioValue('experience'),
-    industryExp: getRadioValue('industryExp'),
-    funding: getRadioValue('funding'),
-    professionals: getRadioValue('professionals'),
-    concerns: document.getElementById('concerns').value,
+    listing:         combine('listing', 'listing'),
+    jobAds:          combine('jobAds', 'jobads'),
+    otherDocs:       combine('otherDocs', 'other'),
+    financialDetails:combine('financialDetails', 'financial'),
+    bizType:         getRadioValue('bizType'),
+    askingPrice:     (document.getElementById('askingPrice') || {}).value || '',
+    turnover:        (document.getElementById('turnover') || {}).value || '',
+    profit:          (document.getElementById('profit') || {}).value || '',
+    financials:      getRadioValue('financials'),
+    yearsOp:         getRadioValue('yearsOp'),
+    whySelling:      getRadioValue('whySelling'),
+    debts:           getRadioValue('debts'),
+    staffCount:      getRadioValue('staffCount'),
+    ownerDep:        getRadioValue('ownerDep'),
+    lease:           getRadioValue('lease'),
+    customers:       getRadioValue('customers'),
+    contracts:       getRadioValue('contracts'),
+    opsDetails:      (document.getElementById('opsDetails') || {}).value || '',
+    experience:      getRadioValue('experience'),
+    industryExp:     getRadioValue('industryExp'),
+    funding:         getRadioValue('funding'),
+    professionals:   getRadioValue('professionals'),
+    concerns:        (document.getElementById('concerns') || {}).value || '',
   };
 }
 
+// ── Analysis ─────────────────────────────────────────────
 async function runAnalysis() {
   if (!apiKey) {
     alert('Please enter your Anthropic API key at the top of the page first.');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    return;
+    window.scrollTo({ top: 0, behavior: 'smooth' }); return;
   }
-
   goToStep(4);
   document.getElementById('loadingPanel').classList.add('active');
   document.getElementById('results').style.display = 'none';
   document.getElementById('resultError').style.display = 'none';
 
-  const data = collectData();
+  const d = collectData();
 
-  const prompt = `You are a business acquisition advisor helping a first-time buyer assess a business for sale. Analyse the information below and provide a structured assessment.
+  const prompt = `You are a business acquisition advisor helping a first-time buyer assess a business for sale. Analyse all the information below carefully and provide a structured assessment.
 
-BUSINESS INFORMATION:
-Type: ${data.bizType}
-Asking price: ${data.askingPrice}
-Business listing/description: ${data.listing || 'Not provided'}
-Job advertisements: ${data.jobAds || 'Not provided'}
-Other documents: ${data.otherDocs || 'Not provided'}
+BUSINESS TYPE: ${d.bizType}
+ASKING PRICE: ${d.askingPrice}
 
-FINANCIALS:
-Annual turnover: ${data.turnover}
-Annual profit: ${data.profit}
-Financial statements seen: ${data.financials}
-Years operating: ${data.yearsOp}
-Why selling: ${data.whySelling}
-Known debts: ${data.debts}
-Additional financial details: ${data.financialDetails || 'None'}
+BUSINESS LISTING / DESCRIPTION:
+${d.listing || 'Not provided'}
+
+JOB ADVERTISEMENTS:
+${d.jobAds || 'Not provided'}
+
+OTHER DOCUMENTS / EMAILS:
+${d.otherDocs || 'Not provided'}
+
+FINANCIAL DOCUMENTS & DETAILS:
+${d.financialDetails || 'Not provided'}
+Annual turnover stated: ${d.turnover}
+Annual profit stated: ${d.profit}
+Financial statements seen: ${d.financials}
+Years operating: ${d.yearsOp}
+Why selling: ${d.whySelling}
+Known debts: ${d.debts}
 
 STAFF & OPERATIONS:
-Staff count: ${data.staffCount}
-Business can run without owner: ${data.ownerDep}
-Lease situation: ${data.lease}
-Customer base: ${data.customers}
-Contracts: ${data.contracts}
-Other ops details: ${data.opsDetails || 'None'}
+Staff count: ${d.staffCount}
+Business can run without owner: ${d.ownerDep}
+Lease: ${d.lease}
+Customer base: ${d.customers}
+Contracts: ${d.contracts}
+Other ops details: ${d.opsDetails || 'None'}
 
 BUYER PROFILE:
-Business experience: ${data.experience}
-Industry experience: ${data.industryExp}
-Funding method: ${data.funding}
-Professionals consulted: ${data.professionals}
-Main concern: ${data.concerns || 'None stated'}
+Business experience: ${d.experience}
+Industry experience: ${d.industryExp}
+Funding method: ${d.funding}
+Professionals consulted: ${d.professionals}
+Main concern: ${d.concerns || 'None stated'}
 
-Respond ONLY with a valid JSON object (no markdown, no code fences) in this exact structure:
+Respond ONLY with a valid JSON object (no markdown, no code fences) exactly like this:
 {
   "verdict": "PROCEED" or "CAUTION" or "AVOID",
   "verdictSummary": "2-3 sentence plain English summary",
@@ -816,28 +939,25 @@ Respond ONLY with a valid JSON object (no markdown, no code fences) in this exac
       },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 2000,
+        max_tokens: 2500,
         messages: [{ role: 'user', content: prompt }]
       })
     });
 
     if (!response.ok) {
       const err = await response.json().catch(() => ({}));
-      throw new Error(err.error?.message || `API error ${response.status}`);
+      throw new Error(err.error?.message || 'API error ' + response.status);
     }
 
     const json = await response.json();
     const text = json.content[0].text;
-
     let parsed;
-    try {
-      parsed = JSON.parse(text);
-    } catch(e) {
-      const match = text.match(/\{[\s\S]*\}/);
-      if (match) parsed = JSON.parse(match[0]);
-      else throw new Error('Could not parse Claude response');
+    try { parsed = JSON.parse(text); }
+    catch(e) {
+      const m = text.match(/\{[\s\S]*\}/);
+      if (m) parsed = JSON.parse(m[0]);
+      else throw new Error('Could not parse response from Claude');
     }
-
     renderResults(parsed);
 
   } catch(err) {
@@ -845,34 +965,35 @@ Respond ONLY with a valid JSON object (no markdown, no code fences) in this exac
     document.getElementById('loadingPanel').classList.remove('active');
     document.getElementById('results').style.display = 'block';
     document.getElementById('resultError').style.display = 'block';
-    document.getElementById('resultErrorMsg').textContent = ' ' + err.message;
+    document.getElementById('resultErrorMsg').textContent = err.message + ' — check your API key and try again.';
   }
 }
 
+// ── Render results ────────────────────────────────────────
 function renderResults(data) {
   document.getElementById('loadingPanel').classList.remove('active');
   document.getElementById('results').style.display = 'block';
 
-  const icons = { PROCEED: '✅', CAUTION: '⚠️', AVOID: '🛑' };
+  const icons  = { PROCEED: '✅', CAUTION: '⚠️', AVOID: '🛑' };
   const titles = { PROCEED: 'Looks Promising — Proceed Carefully', CAUTION: 'Proceed With Caution', AVOID: 'Not Recommended — Too Many Red Flags' };
-  const classes = { PROCEED: 'proceed', CAUTION: 'caution', AVOID: 'avoid' };
+  const classes= { PROCEED: 'proceed', CAUTION: 'caution', AVOID: 'avoid' };
   const banner = document.getElementById('verdictBanner');
-  banner.className = `verdict-banner ${classes[data.verdict] || 'caution'}`;
-  document.getElementById('verdictIcon').textContent = icons[data.verdict] || '⚠️';
-  document.getElementById('verdictTitle').textContent = titles[data.verdict] || data.verdict;
-  document.getElementById('verdictSummary').textContent = data.verdictSummary || '';
+  banner.className = 'verdict-banner ' + (classes[data.verdict] || 'caution');
+  document.getElementById('verdictIcon').textContent    = icons[data.verdict]  || '⚠️';
+  document.getElementById('verdictTitle').textContent   = titles[data.verdict] || data.verdict;
+  document.getElementById('verdictSummary').textContent = data.verdictSummary  || '';
 
   const scoreLabels = {
-    financial: '💰 Financial Health',
+    financial:  '💰 Financial Health',
     operations: '⚙️ Operations',
-    market: '📈 Market & Customers',
-    risk: '🛡️ Risk Level'
+    market:     '📈 Market & Customers',
+    risk:       '🛡️ Risk Level'
   };
   const grid = document.getElementById('scoresGrid');
   grid.innerHTML = '';
   if (data.scores) {
     Object.entries(data.scores).forEach(([key, val]) => {
-      const pct = (val.score / 10) * 100;
+      const pct   = (val.score / 10) * 100;
       const color = val.score >= 7 ? '#10b981' : val.score >= 4 ? '#f59e0b' : '#ef4444';
       grid.innerHTML += `<div class="score-card">
         <div class="score-label">${scoreLabels[key] || key}</div>
@@ -885,34 +1006,34 @@ function renderResults(data) {
     });
   }
 
-  if (data.greenFlags?.length) {
-    document.getElementById('greenFlagsCard').style.display = 'block';
-    document.getElementById('greenFlagsList').innerHTML = data.greenFlags.map(f => `<li>${f}</li>`).join('');
-  }
-  if (data.redFlags?.length) {
-    document.getElementById('redFlagsCard').style.display = 'block';
-    document.getElementById('redFlagsList').innerHTML = data.redFlags.map(f => `<li>${f}</li>`).join('');
-  }
-  if (data.questionsToAsk?.length) {
-    document.getElementById('questionsCard').style.display = 'block';
-    document.getElementById('questionsList').innerHTML = data.questionsToAsk.map(q => `<li>${q}</li>`).join('');
-  }
-  if (data.nextSteps?.length) {
+  const showList = (cardId, listId, items, tag='li') => {
+    if (items && items.length) {
+      document.getElementById(cardId).style.display = 'block';
+      document.getElementById(listId).innerHTML = items.map(i => `<${tag}>${i}</${tag}>`).join('');
+    }
+  };
+  showList('greenFlagsCard', 'greenFlagsList', data.greenFlags);
+  showList('redFlagsCard',   'redFlagsList',   data.redFlags);
+  showList('questionsCard',  'questionsList',  data.questionsToAsk);
+  if (data.nextSteps && data.nextSteps.length) {
     document.getElementById('nextStepsCard').style.display = 'block';
-    document.getElementById('nextStepsList').innerHTML = data.nextSteps.map(s => `<li style="margin-bottom:6px;font-size:13.5px;line-height:1.6">${s}</li>`).join('');
+    document.getElementById('nextStepsList').innerHTML = data.nextSteps
+      .map(s => `<li style="margin-bottom:6px;font-size:13.5px;line-height:1.6">${s}</li>`).join('');
   }
   if (data.fullAnalysis) {
     document.getElementById('fullAnalysisCard').style.display = 'block';
     document.getElementById('fullAnalysis').textContent = data.fullAnalysis;
   }
-
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+// ── Restart ───────────────────────────────────────────────
 function restartAssessment() {
   document.querySelectorAll('textarea, input[type="text"]').forEach(el => el.value = '');
   document.querySelectorAll('.radio-btn').forEach(b => b.classList.remove('selected'));
   document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+  document.querySelectorAll('.file-chips').forEach(c => c.innerHTML = '');
+  Object.keys(extracted).forEach(k => extracted[k] = '');
   ['greenFlagsCard','redFlagsCard','questionsCard','nextStepsCard','fullAnalysisCard'].forEach(id => {
     document.getElementById(id).style.display = 'none';
   });
@@ -922,6 +1043,5 @@ function restartAssessment() {
   goToStep(0);
 }
 </script>
-
 </body>
 </html>
