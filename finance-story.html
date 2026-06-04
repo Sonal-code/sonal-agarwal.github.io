@@ -434,6 +434,82 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
     </div>
   </div>
 
+  <!-- HOW IT WORKS -->
+  <div class="story-card mb20">
+    <div class="section-tag c-accent">⚙️ How This Calculator Works</div>
+    <h2>What It Calculates & Why</h2>
+    <p class="story-sub">This is not a generic finance article. It takes the numbers you enter and runs real calculations to give you a personalised financial health score and action plan. Here's exactly how each score is worked out.</p>
+
+    <div class="guide-two-col" style="margin-bottom:20px;">
+      <div class="guide-col">
+        <h3>💵 Cash Flow Score</h3>
+        <ul>
+          <li>Takes your total monthly income minus all outgoings (mortgages + expenses + savings)</li>
+          <li>Calculates what % of income is left over as surplus</li>
+          <li>Higher surplus = higher score. A surplus of 20%+ of income scores 90+. A deficit scores below 50</li>
+          <li>This tells you whether your money is working hard enough — or whether you're stretched thin</li>
+        </ul>
+      </div>
+      <div class="guide-col">
+        <h3>🏠 Property Equity Score</h3>
+        <ul>
+          <li>Adds up all property values and all mortgage balances across your portfolio</li>
+          <li>Calculates your Loan-to-Value Ratio (LVR) — what % the bank owns vs what you own</li>
+          <li>LVR of 0% = score of 100. LVR of 80% = score of 20</li>
+          <li>The lower your debt relative to property value, the stronger your wealth position</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="guide-two-col" style="margin-bottom:20px;">
+      <div class="guide-col">
+        <h3>💰 Savings Rate Score</h3>
+        <ul>
+          <li>Calculates your monthly savings as a % of total income</li>
+          <li>Benchmarks this against the recommended 20% savings rate for long-term wealth</li>
+          <li>Saving 20%+ scores 100. Saving 10% scores 50. Saving nothing scores 0</li>
+          <li>This single number has the biggest long-term impact on retirement wealth</li>
+        </ul>
+      </div>
+      <div class="guide-col">
+        <h3>🛡️ Emergency Buffer Score</h3>
+        <ul>
+          <li>Calculates your total monthly expenses (living costs + mortgages)</li>
+          <li>Your emergency target = 6 months of those expenses</li>
+          <li>Compares your current savings balance against that target</li>
+          <li>At or above 6 months = score of 100. This protects you if income stops or rates rise sharply</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="guide-two-col" style="margin-bottom:20px;">
+      <div class="guide-col">
+        <h3>🎯 Retirement Track Score</h3>
+        <ul>
+          <li>Projects your net worth from today to retirement age using 5% annual property growth and your savings compounding at the rate you entered</li>
+          <li>Compares that projected figure against a target of 15× your annual income</li>
+          <li>The further ahead you are, the higher the score</li>
+          <li>This shows whether your current habits will get you to a comfortable retirement — or leave a gap</li>
+        </ul>
+      </div>
+      <div class="guide-col">
+        <h3>🏠 Mortgage Payoff Calculator</h3>
+        <ul>
+          <li>For each property, calculates the exact monthly repayment needed to fully pay off the mortgage by your retirement age</li>
+          <li>Uses a standard 6% interest rate assumption</li>
+          <li>Compares that to what you're currently paying and shows the gap per property</li>
+          <li>Even small increases to repayments now can shift your debt-free date by years</li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="background:rgba(124,107,255,0.07); border:1px solid rgba(124,107,255,0.2); border-radius:10px; padding:16px 20px; font-size:13px; color:var(--muted); line-height:1.7;">
+      <strong style="color:var(--text)">Overall Score</strong> is the average of all five dimensions. A score of 75+ is a strong position. 55–74 means there are clear gaps to close. Below 55 means action is needed. The score updates instantly every time you enter new numbers — tap "Enter new numbers" at the bottom of the page to try different scenarios.
+      <br><br>
+      <strong style="color:var(--text)">🔒 Privacy:</strong> Every calculation happens entirely in your browser. No data is sent to any server. Refreshing the page clears everything.
+    </div>
+  </div>
+
   <div class="disclaimer">
     <strong>🔒 Privacy:</strong> Your numbers stay in your browser only — nothing is stored or sent anywhere. Refresh the page to clear all data. &nbsp;|&nbsp; <strong>Note:</strong> This dashboard is for financial awareness and planning conversations, not formal financial advice. Always consult a licensed financial adviser for personal recommendations. &nbsp;|&nbsp; <button onclick="resetFinance()" style="background:none;border:none;color:var(--accent);font-size:12px;cursor:pointer;text-decoration:underline;font-family:var(--font);">Enter new numbers</button>
   </div>
